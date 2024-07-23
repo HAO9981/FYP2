@@ -1,0 +1,40 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "npm run development",
+    "development": "mix",
+    "watch": "mix watch",
+    "watch-poll": "mix watch -- --watch-options-poll=1000",
+    "hot": "mix watch --hot",
+    "prod": "npm run production",
+    "production": "mix --production"
+  },
+  "devDependencies": {
+    "@popperjs/core": "^2.11.6",
+    "@vitejs/plugin-vue": "^4.6.0",
+    "axios": "^0.25",
+    "bootstrap": "^5.2.3",
+    "laravel-mix": "^6.0.6",
+    "laravel-vite-plugin": "^1.0.1",
+    "lodash": "^4.17.19",
+    "postcss": "^8.1.14",
+    "sass": "^1.56.1",
+    "vite": "^5.0.10",
+    "vue": "^3.2.37"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "vue-loader": "^17.4.0"
+  },
+  "name": "project",
+  "description": "<p align=\"center\"><a href=\"https://laravel.com\" target=\"_blank\"><img src=\"https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg\" width=\"400\"></a></p>",
+  "version": "1.0.0",
+  "main": "vite.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
