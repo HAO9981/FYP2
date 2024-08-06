@@ -1,60 +1,70 @@
 @extends('staffLayout')
 
 @section('content')
-<div class="row">
-    <div class="col-sm-2"></div>
-    <div class="col-sm-10"> <!-- 修改这里的列宽为 col-sm-10 -->
-        <br><br>
-        <style>
-            .left {
-                float: left;
-                width: 25%;
-                margin-left: -150px;
-            }
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
 
-            .right {
-                float: right;
-                width: 80%; /* 调整右侧内容的宽度，原先是 70% */
-                margin-right: 50px;
-            }
+            <style>
+                .left {
+                    float: left;
+                    width: 20%;
+                    margin-top: 50px;
+                }
 
-            .table-img {
-                width: 150px; /* 调整表格中图片的宽度 */
-                height: auto; /* 保持高度自适应 */
-            }
+                .right {
+                    float: right;
+                    width: 70%; /* 调整右侧内容的宽度，原先是 70% */
+                    margin-top: 50px;
 
-            .upload-btn {
-                margin-top: 20px; /* 调整上传按钮的上边距 */
-            }
-
-            .btn-col {
-                text-align: center; /* 按钮居中 */
-            }
-        </style>
-        <div>
+                }
+            </style>
+            <!-- 左侧展示区域 -->
             <div class="left">
-                <h1>Upload Image</h1>
-                <input type="file" id="fileInput" name="image" accept="image/*" />
-                <button type="button" onclick="uploadImage()" class="upload-btn btn btn-primary">Upload</button>
-                <img id="preview" src="#" alt="Image Preview" style="display: none; width: 300px; height: auto;" />
+                <h2 class="mb-4" >Upload Image</h2>
                 
+                <!-- 上传图片表单 -->
+                <div class="upload-form">
+                    <form action="{{ route('upload.image') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="form-group d-flex align-items-center">
+                            <input type="file" id="fileInput" name="image" accept="image/*" class="form-control-file mr-2">
+                            <button type="submit" class="btn btn-primary">Upload</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- 图片预览 -->
+                <div class="image-preview">
+                    <img id="preview" src="#" alt="Image Preview" style="display: none; width: 300px; height: auto;" />
+                </div>
+                
+                <!-- 座位图片展示 -->
+                <div class="seat-image">
+                    <h2 >Seat Images</h2>
+                    <img id="seatImage" src="{{ asset('images/seat_image.jpg') }}" alt="Seats Image" class="img-fluid">
+                </div>
             </div>
             <div class="right">
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>Table.No</th>
+                            <th>Table No</th>
                             <th>Image</th>
                             <th>Type</th>
                             <th>Price</th>
-                            <th class="btn-col"><a href="{{ route('addTable') }}" class="btn btn-success">Add New Table</a></th>
+                            <th class="btn-col">
+                                <a href="{{ route('addTable') }}" class="btn btn-success">Add New Table</a>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($tables as $table)
                         <tr>
                             <td>{{ $table->number }}</td>
-                            <td><img src="{{ asset('images') . '/' . $table->image }}" alt="" class="table-img img-fluid"></td>
+                            <td>
+                                <img src="{{ asset('images') . '/' . $table->image }}" alt="" class="table-img img-fluid">
+                            </td>
                             <td>{{ $table->type }}</td>
                             <td>RM{{ $table->price }}</td> 
                             <td class="btn-col">
@@ -68,62 +78,5 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-2"></div>
 </div>
-
-<script>
-    function uploadImage() {
-    const fileInput = document.getElementById('fileInput');
-    const preview = document.getElementById('preview');
-    
-    if (fileInput.files && fileInput.files[0]) {
-        const file = fileInput.files[0];
-
-        // 预览图片
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            preview.src = e.target.result;
-            preview.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-
-        // 创建 FormData 对象
-        const formData = new FormData();
-        formData.append('image', file);
-
-        // 发送 AJAX 请求
-        fetch('{{ route("upload.image") }}', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}' // 添加 CSRF 令牌
-            },
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert('Image uploaded successfully!');
-            // 更新显示表格中的图片
-            updateTableImages(data.filename);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-    } else {
-        alert('Please select an image file.');
-    }
-}
-
-function updateTableImages(filename) {
-    const images = document.querySelectorAll('.table-img');
-
-    images.forEach(img => {
-        const src = img.getAttribute('src').split('/').pop();
-        if (src === 'empty.jpg') { // 或者其他默认图片名称
-            img.setAttribute('src', `{{ asset('images') }}/${filename}`);
-        }
-    });
-}
-
-</script>
-
 @endsection

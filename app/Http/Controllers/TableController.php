@@ -137,11 +137,15 @@ class TableController extends Controller
 }
 
 
-    public function book($id)
-    {
-        $table = Table::findOrFail($id);
-        return view('book', compact('table'));
-    }
+public function book($id, Request $request)
+{
+    $table = Table::findOrFail($id);
+    $date = $request->input('date');
+    $startTime = $request->input('start_time');
+    return view('book', compact('table', 'date', 'startTime'));
+}
+
+
 
     public function store(Request $request)
 {
@@ -158,17 +162,19 @@ class TableController extends Controller
     $startDateTime = Carbon::parse($request->date . ' ' . $request->start_time);
     $endDateTime = Carbon::parse($request->date . ' ' . $request->end_time);
 
+
     $conflictingReservations = Reservation::where('table_id', $request->table_id)
-        ->where('date', $request->date)
-        ->where(function ($query) use ($startDateTime, $endDateTime) {
-            $query->where(function ($q) use ($startDateTime, $endDateTime) {
-                $q->whereBetween('start_time', [$startDateTime, $endDateTime])
-                    ->orWhereBetween('end_time', [$startDateTime, $endDateTime])
-                    ->orWhereRaw('? BETWEEN start_time AND end_time', [$startDateTime])
-                    ->orWhereRaw('? BETWEEN start_time AND end_time', [$endDateTime]);
-            });
-        })
-        ->exists();
+    ->where('date', $request->date)
+    ->where(function ($query) use ($startDateTime, $endDateTime) {
+        $query->where(function ($q) use ($startDateTime, $endDateTime) {
+            $q->whereBetween('start_time', [$startDateTime, $endDateTime])
+                ->orWhereBetween('end_time', [$startDateTime, $endDateTime])
+                ->orWhereRaw('? BETWEEN start_time AND end_time', [$startDateTime])
+                ->orWhereRaw('? BETWEEN start_time AND end_time', [$endDateTime]);
+        });
+    })
+    ->exists();
+
 
     if ($conflictingReservations) {
         return back()->withErrors(['error' => 'The selected time slot is already reserved. Please choose a different time.']);
@@ -184,49 +190,102 @@ class TableController extends Controller
         'end_time' => $request->end_time,
     ]);
 
-    return redirect()->route('showTable')->with('success', 'Reservation successful.');
+    return redirect()->route('showTable')->with('reservation', 'Reservation successful.');
 }
 
 
-    public function getAvailableTimes(Request $request)
+public function getAvailableTimes(Request $request)
 {
     $tableId = $request->input('table_id');
     $date = $request->input('date');
 
+    // 查询当天已有的预约
     $reservations = Reservation::where('table_id', $tableId)
         ->where('date', $date)
         ->get();
 
     $bookedTimes = $reservations->map(function ($reservation) {
         return [
-            'start_time' => Carbon::parse($reservation->start_time)->format('H:i'),
-            'end_time' => Carbon::parse($reservation->end_time)->format('H:i'),
+            'start_time' => $reservation->start_time,
+            'end_time' => $reservation->end_time,
         ];
+    })->toArray();
+
+    $allTimes = $this->generateTimeOptions(10, 20, 30); // 例如10AM到8PM
+
+    // 增加处理结束时间边界
+    $adjustedBookedTimes = array_map(function($time) {
+        $endTime = new \DateTime($time['end_time']);
+        $endTime->modify('+1 minute'); // 将结束时间的边界调整为可用的时间段
+        return [
+            'start_time' => $time['start_time'],
+            'end_time' => $endTime->format('H:i'),
+        ];
+    }, $bookedTimes);
+
+    // 计算不可用时间（分为两个区间）
+    $unavailableTimes = array_filter($allTimes, function ($time) use ($adjustedBookedTimes) {
+        foreach ($adjustedBookedTimes as $booked) {
+            $timeDateTime = new \DateTime($time);
+            $startDateTime = new \DateTime($booked['start_time']);
+            $endDateTime = new \DateTime($booked['end_time']);
+            
+            // Check if the time is within any booked range
+            if ($timeDateTime >= $startDateTime && $timeDateTime < $endDateTime) {
+                return true;
+            }
+        }
+        return false;
     });
 
+    // 将所有时间分为00-29和30-59的区间
+    $timeSlots = [];
+    foreach ($allTimes as $time) {
+        $hour = (new \DateTime($time))->format('H');
+        $minute = (new \DateTime($time))->format('i');
+
+        // 判断是属于00-29还是30-59
+        if ($minute < 30) {
+            $timeSlots["{$hour}:00-{$hour}:29"][] = $time;
+        } else {
+            $timeSlots["{$hour}:30-{$hour}:59"][] = $time;
+        }
+    }
+
+    // 筛选可用时间
+    $availableTimes = [];
+    foreach ($timeSlots as $range => $times) {
+        if (!array_intersect($times, $unavailableTimes)) {
+            $availableTimes = array_merge($availableTimes, $times);
+        }
+    }
+
     return response()->json([
-        'booked_times' => $bookedTimes,
+        'available_times' => array_values($availableTimes),
+        'unavailable_times' => array_values($unavailableTimes),
     ]);
 }
 
 
 
-    private function generateTimeOptions($start, $end, $step)
-    {
-        $timeOptions = [];
-        $currentTime = new \DateTime();
-        $currentTime->setTime($start, 0);
 
-        $endTime = new \DateTime();
-        $endTime->setTime($end, 0);
+private function generateTimeOptions($startHour, $endHour, $stepMinutes)
+{
+    $timeOptions = [];
+    $currentTime = new \DateTime();
+    $currentTime->setTime($startHour, 0);
 
-        while ($currentTime <= $endTime) {
-            $timeOptions[] = $currentTime->format('H:i');
-            $currentTime->modify("+{$step} minutes");
-        }
+    $endTime = new \DateTime();
+    $endTime->setTime($endHour, 0);
 
-        return $timeOptions;
+    while ($currentTime <= $endTime) {
+        $timeOptions[] = $currentTime->format('H:i');
+        $currentTime->modify("+{$stepMinutes} minutes");
     }
+
+    return $timeOptions;
+}
+
 
     // 显示桌子详情，展示三个月内的桌子信息
     public function showTableDetail(Request $request, $id)
@@ -235,13 +294,13 @@ class TableController extends Controller
     $date = $request->input('date', Carbon::now()->format('Y-m-d'));
 
     $tables = Table::all();
-
     $startDate = Carbon::parse($date);
     $endDate = Carbon::parse($date)->addMonths(3);
 
     $reservations = Reservation::whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
         ->get();
 
+    // Generate all time slots
     $timeSlots = [];
     $startTime = Carbon::createFromFormat('H:i', '10:00');
     $endTime = Carbon::createFromFormat('H:i', '20:00');
@@ -255,18 +314,33 @@ class TableController extends Controller
         foreach ($tables as $tbl) {
             $isAvailable = true;
             foreach ($reservations as $reservation) {
-                if ($reservation->table_id == $tbl->id &&
-                    $slot >= $reservation->start_time && $slot < $reservation->end_time) {
-                    $isAvailable = false;
-                    break;
+                if ($reservation->table_id == $tbl->id) {
+                    $reservationStartTime = Carbon::parse($reservation->start_time);
+                    $reservationEndTime = Carbon::parse($reservation->end_time)->addMinutes(30); // 延迟30分钟
+
+                    // Convert slot to comparable format
+                    $slotTime = Carbon::parse($slot);
+
+                    // Check if the slot is within or overlaps with the reservation period
+                    if ($slotTime >= $reservationStartTime && $slotTime < $reservationEndTime) {
+                        $isAvailable = false;
+                        break;
+                    }
                 }
             }
-            $availability[$slot][$tbl->id] = $isAvailable ? 'available' : 'not_available';
+            $availability[$slot][$tbl->id] = $isAvailable ? 'available' : 'booked';
         }
     }
 
     return view('tableDetail', compact('table', 'availability', 'timeSlots', 'tables', 'date'));
 }
+
+
+
+
+
+
+
 
 
     public function showBookForm(Request $request)
@@ -291,5 +365,24 @@ public function getRecentImages()
     // 返回 JSON 数据
     return response()->json(['images' => $images]);
 }
+
+public function uploadTableImage(Request $request)
+{
+    $request->validate([
+        'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+    ]);
+
+    // 处理上传的文件
+    if ($request->hasFile('image')) {
+        $file = $request->file('image');
+        $filename = 'seat_image.jpg'; // 固定文件名
+        $file->move(public_path('images'), $filename);
+
+        // 可以在这里保存图片路径到数据库，但这个例子只是保存到本地
+    }
+    return redirect()->back()->with('success', 'Image uploaded successfully!');
+}
+
+
 
 }

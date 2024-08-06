@@ -13,17 +13,16 @@ return new class extends Migration
      */
     public function up()
 {
-    Schema::table('tables', function (Blueprint $table) {
-        $table->string('image')->nullable();
+    Schema::table('reservations', function (Blueprint $table) {
+        $table->boolean('is_paid')->default(false); // 默认为未付款
     });
 }
-
-
 
 public function down()
 {
-    Schema::table('tables', function (Blueprint $table) {
-        $table->dropColumn('image');
+    Schema::table('reservations', function (Blueprint $table) {
+        $table->dropColumn('is_paid');
     });
 }
+
 };

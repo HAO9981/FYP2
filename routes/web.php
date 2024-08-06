@@ -98,20 +98,26 @@ Route::post('/updateTable',
 Route::get('/viewTable/delete/{id}',
 [App\Http\Controllers\TableController::class,'delete'])->name('viewTable.delete');
 
-Route::post('/upload', [TableController::class, 'upload'])->name('upload.image');
+Route::post('/upload-image', [TableController::class, 'uploadImage'])->name('upload.image');
 
 
 
 Route::get('/book/{tableId}', [ReservationController::class, 'book'])->name('reservations.book');
 Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
-Route::get('/payment/{reservation}', [PaymentController::class, 'show'])->name('payment.show');
-Route::post('/payment/{reservation}', [ReservationController::class, 'process'])->name('payment.process');
 Route::get('/reservations', [ReservationController::class, 'index'])->name('reservations.index');
-Route::get('/reservation/success/{reservation}', [ReservationController::class, 'success'])->name('reservation.success');
+Route::get('/reservation/reservationDetail/{reservation}', [ReservationController::class, 'reservationDetail'])->name('reservationDetail');
 Route::get('/list', [ReservationController::class, 'list'])->name('list');
 Route::get('/list/{reservation}', [ReservationController::class, 'showList'])->name('list.show');
 Route::get('/api/available-times', [TableController::class, 'getAvailableTimes']);
 Route::get('/table-detail/{id}', [TableController::class, 'showTableDetail'])->name('tableDetail');
 Route::get('/book', [TableController::class, 'showBookForm'])->name('bookTable');
 Route::get('/get-recent-images', [TableController::class, 'getRecentImages'])->name('getRecentImages');
+
+
+Route::post('/create-checkout-session', [PaymentController::class, 'createCheckoutSession'])->name('create.checkout.session');
+Route::get('/payment/success', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
+Route::get('/payment/cancel', [PaymentController::class, 'paymentCancel'])->name('payment.cancel');
+
+Route::post('/upload-image', [TableController::class, 'uploadTableImage'])->name('upload.image');
+
 

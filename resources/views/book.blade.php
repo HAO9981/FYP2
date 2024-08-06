@@ -6,7 +6,7 @@
         <div class="col-md-4 mb-4">
             <div class="card">
                 <div class="card-header">Table Information</div>
-                <div class="card-body" style="height: 610px;">
+                <div class="card-body">
                     <p><strong>Table Number:</strong> {{ $table->number }}</p>
                     <p><strong>Table Type:</strong> {{ $table->type }}</p>
                     <p><strong>Table Price (per hour):</strong> RM {{ $table->price }}</p>
@@ -31,7 +31,6 @@
                     <form method="POST" action="{{ route('reservations.store') }}">
                         @csrf
                         <input type="hidden" name="table_id" value="{{ $table->id }}">
-                        <input type="hidden" name="date" id="date" value="{{ $date }}">
 
                         <div class="form-group">
                             <label for="name">Name:</label>
@@ -49,6 +48,11 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="date">Date:</label>
+                            <input type="date" id="date" name="date" class="form-control" value="{{ $date }}" readonly>
+                        </div>
+
+                        <div class="form-group">
                             <label for="start_time">Start Time</label>
                             <select class="form-control" id="start_time" name="start_time" required>
                                 <!-- Options will be populated by JavaScript -->
@@ -62,7 +66,15 @@
                             </select>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Submit Reservation</button>
+                        <div class="form-group">
+                            <label for="total_price">Total Price:</label>
+                            <input type="text" id="total_price" name="total_price" class="form-control" value="RM 0.00" readonly>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ route('tableDetail', ['id' => $table->id]) }}" class="btn btn-secondary">Back</a>
+                            <button type="submit" class="btn btn-primary">Submit Reservation</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -75,6 +87,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const startTimeInput = document.getElementById('start_time');
     const endTimeInput = document.getElementById('end_time');
     const dateInput = document.getElementById('date');
+    const totalPriceInput = document.getElementById('total_price');
+    const tablePricePerHour = {{ $table->price }};
 
     function generateTimeOptions(startHour, endHour, stepMinutes) {
         const timeOptions = [];
@@ -84,8 +98,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const endTime = new Date();
         endTime.setHours(endHour, 0, 0, 0);
 
-        while (currentTime < endTime) {
-            timeOptions.push(currentTime.toISOString().substr(11, 5));
+        while (currentTime <= endTime) {
+            let hours = String(currentTime.getHours()).padStart(2, '0');
+            let minutes = String(currentTime.getMinutes()).padStart(2, '0');
+            timeOptions.push(`${hours}:${minutes}`);
             currentTime.setMinutes(currentTime.getMinutes() + stepMinutes);
         }
 
@@ -96,36 +112,20 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(`/api/available-times?table_id={{ $table->id }}&date=${date}`)
             .then(response => response.json())
             .then(data => {
-                const allTimes = generateTimeOptions(18, 28, 30); // 10 AM to 8 PM
-                const bookedTimes = data.booked_times || [];
+                const allTimes = generateTimeOptions(10, 20, 30); // 10 AM to 8 PM
+                const unavailableTimes = data.unavailable_times || [];
 
-                const availableStartTimes = allTimes.filter(time => 
-                    !bookedTimes.some(booked => 
-                        time >= booked.start_time && time < booked.end_time
-                    )
-                );
-
+                const availableStartTimes = allTimes.filter(time => !unavailableTimes.includes(time));
                 setTimeOptions(startTimeInput, availableStartTimes);
 
                 updateEndTimeOptions();
+                updateTotalPrice(); // Ensure the price is calculated initially
 
-                startTimeInput.addEventListener('change', updateEndTimeOptions);
-
-                function updateEndTimeOptions() {
-                    const selectedStartTime = startTimeInput.value;
-                    if (!selectedStartTime) {
-                        setTimeOptions(endTimeInput, []);
-                        return;
-                    }
-
-                    const availableEndTimes = allTimes.filter(time => 
-                        !bookedTimes.some(booked => 
-                            time > booked.start_time && time <= booked.end_time
-                        ) && time > selectedStartTime
-                    );
-
-                    setTimeOptions(endTimeInput, availableEndTimes);
-                }
+                startTimeInput.addEventListener('change', function() {
+                    updateEndTimeOptions();
+                    updateTotalPrice(); // Update price when start time changes
+                });
+                endTimeInput.addEventListener('change', updateTotalPrice);
             })
             .catch(error => {
                 console.error('Error fetching available times:', error);
@@ -141,6 +141,44 @@ document.addEventListener('DOMContentLoaded', function () {
             input.appendChild(optionElement);
         });
     }
+
+    function updateEndTimeOptions() {
+        const selectedStartTime = startTimeInput.value;
+        if (!selectedStartTime) {
+            setTimeOptions(endTimeInput, []);
+            return;
+        }
+
+        const allTimes = generateTimeOptions(10, 20, 30); // 10 AM to 8 PM
+        const delayedStartTime = new Date(`1970-01-01T${selectedStartTime}:00Z`);
+        delayedStartTime.setMinutes(delayedStartTime.getMinutes() + 30);
+        const delayedStartTimeString = delayedStartTime.toISOString().substr(11, 5);
+
+        const availableEndTimes = allTimes.filter(time => 
+            time > delayedStartTimeString
+        );
+
+        setTimeOptions(endTimeInput, availableEndTimes);
+    }
+
+    function updateTotalPrice() {
+    const startTime = startTimeInput.value;
+    const endTime = endTimeInput.value;
+
+    if (startTime && endTime) {
+        const start = new Date(`1970-01-01T${startTime}:00Z`);
+        const end = new Date(`1970-01-01T${endTime}:00Z`);
+        const durationHours = (end - start) / (1000 * 60 * 60);
+        const totalPrice = durationHours * tablePricePerHour;
+        totalPriceInput.value = `RM ${totalPrice.toFixed(2)}`;
+        localStorage.setItem('total_price', totalPrice.toFixed(2));
+    } else {
+        totalPriceInput.value = 'RM 0.00';
+        localStorage.removeItem('total_price');
+    }
+}
+
+
 
     fetchAvailableTimes('{{ $date }}');
 

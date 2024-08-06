@@ -13,17 +13,17 @@ return new class extends Migration
      */
     public function up()
 {
-    Schema::table('tables', function (Blueprint $table) {
-        $table->string('image')->nullable();
+    Schema::table('reservations', function (Blueprint $table) {
+        $table->decimal('total_price', 10, 2)->nullable()->after('end_time');
     });
 }
-
-
 
 public function down()
 {
-    Schema::table('tables', function (Blueprint $table) {
-        $table->dropColumn('image');
+    Schema::table('reservations', function (Blueprint $table) {
+        $table->dropColumn('total_price');
     });
 }
+
+
 };

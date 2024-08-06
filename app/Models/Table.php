@@ -10,4 +10,9 @@ class Table extends Model
     use HasFactory;
 
     protected $fillable = ['number', 'image', 'type', 'price', 'is_reserved'];
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
+    }
 }

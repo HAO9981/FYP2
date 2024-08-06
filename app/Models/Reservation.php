@@ -17,6 +17,7 @@ class Reservation extends Model
         'start_time',
         'end_time',
         'table_id', // 确保在可填字段中
+        'is_paid',
     ];
 
     public function table()

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Table;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class ReservationController extends Controller
 {
@@ -16,12 +16,11 @@ class ReservationController extends Controller
      * @return \Illuminate\View\View
      */
     public function book($tableId)
-{
-    $table = Table::findOrFail($tableId);
-    $date = request('date', now()->format('Y-m-d')); // 获取传递的日期或设置默认日期
-    // 假设有一个表字段 `available_start_time` 和 `available_end_time` 定义时间段
-    return view('book', compact('table', 'date'));
-}
+    {
+        $table = Table::findOrFail($tableId);
+        $date = request('date', now()->format('Y-m-d'));
+        return view('book', compact('table', 'date'));
+    }
 
     /**
      * 存储预约信息
@@ -61,51 +60,9 @@ class ReservationController extends Controller
         $reservation = Reservation::create($validatedData);
 
         if ($reservation) {
-            return redirect()->route('reservation.success', ['reservation' => $reservation->id]);
+            return redirect()->route('reservationDetail', ['reservation' => $reservation->id]);
         } else {
             return back()->withInput()->withErrors(['msg' => 'Failed to create reservation']);
-        }
-    }
-
-    /**
-     * 显示支付页面
-     *
-     * @param  int  $reservationId
-     * @return \Illuminate\View\View
-     */
-    public function show($reservationId)
-    {
-        $reservation = Reservation::findOrFail($reservationId);
-        return view('payment', compact('reservation'));
-    }
-
-    /**
-     * 处理支付并更新桌子状态
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $reservationId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function process(Request $request, $reservationId)
-    {
-        $reservation = Reservation::findOrFail($reservationId);
-        $table = Table::findOrFail($reservation->table_id);
-
-        // 假设这里处理了支付逻辑，例如更新支付状态等
-
-        // 确认支付后，验证预约时间是否仍在有效范围内
-        $currentTime = now();
-        if ($currentTime->between($reservation->date->setTimeFromTimeString($reservation->start_time), $reservation->date->setTimeFromTimeString($reservation->end_time))) {
-            $table->is_reserved = true;
-            $table->save();
-
-            Log::info('Processing payment for reservation ID: ' . $reservationId);
-            Log::info('Table ID: ' . $reservation->table_id);
-
-            return redirect()->route('showTable')->with('success', 'Payment completed and table reserved.');
-        } else {
-            // 如果支付后超出了预约时间范围，则进行适当的处理，例如取消预约或者提示用户
-            return redirect()->route('reservation.show', ['reservation' => $reservationId])->withErrors(['msg' => 'Payment completed, but reservation time has expired.']);
         }
     }
 
@@ -115,10 +72,10 @@ class ReservationController extends Controller
      * @param  int  $reservationId
      * @return \Illuminate\View\View
      */
-    public function success($reservationId)
+    public function reservationDetail($reservationId)
     {
         $reservation = Reservation::findOrFail($reservationId);
-        return view('success', compact('reservation'));
+        return view('reservationDetail', compact('reservation'));
     }
 
     public function list()
@@ -147,6 +104,11 @@ class ReservationController extends Controller
      */
     public function getAvailableTimes(Request $request)
     {
+        $request->validate([
+            'table_id' => 'required|integer|exists:tables,id',
+            'date' => 'required|date',
+        ]);
+
         $tableId = $request->input('table_id');
         $date = $request->input('date');
 
@@ -213,4 +175,7 @@ class ReservationController extends Controller
 
         return $timeOptions;
     }
+
+    
+
 }

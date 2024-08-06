@@ -12,4 +12,6 @@ class CusController extends Controller
         $viewTable=Table::all();
         return view('showTable')->with ('tables',$viewTable);
     }
+
+    
 }
