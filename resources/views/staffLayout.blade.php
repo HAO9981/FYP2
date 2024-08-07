@@ -30,6 +30,9 @@
                     <li class="nav-item active">
                       <a class="nav-link" href="/staffShowProduct">Board Game Library</a>
                     </li>
+                    <li class="nav-item active">
+                      <a class="nav-link" href="{{route('staffMenu')}}">Menu</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/staffShowTable">Table</a>
                     </li>
@@ -37,13 +40,6 @@
                         <a class="nav-link" href="{{ route('list') }}">List</a>
                     </li>
                   </ul>
-                  <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="{{route('staffAccount')}}">
-              <mark>{{ Auth::guard('staff')->user()->name }}</mark>
-            </a>
-          </li>
-        </ul>
                 </div>
             </nav> 
     
