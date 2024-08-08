@@ -6,6 +6,23 @@
     <div class="col-sm-6">
         <br><br>
         <h3>Account Information</h3>
+
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <form action="{{ route('updateAccount') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <label for="userName">Name:</label>
@@ -27,8 +44,8 @@
             <label for="newPassword">New Password:</label>
             <input class="form-control" type="password" id="newPassword" name="newPassword">
 
-            <label for="confirmNewPassword">Confirm New Password:</label>
-            <input class="form-control" type="password" id="confirmNewPassword" name="confirmNewPassword">
+            <label for="newPassword_confirmation">Confirm New Password:</label>
+            <input class="form-control" type="password" id="newPassword_confirmation" name="newPassword_confirmation">
             
             <br><br>
             <button type="submit" class="btn btn-primary">Update Account Information</button>
@@ -37,5 +54,4 @@
     </div>
     <div class="col-sm-3"></div>
 </div>
-
 @endsection
