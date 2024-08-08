@@ -12,4 +12,9 @@ class ProductController extends Controller
         $viewProduct=Product::all();
         return view('showProduct')->with ('products',$viewProduct);
     }
+
+    public function productDetail($id){
+        $viewProduct=Product::all()->where('id',$id);
+        return view('showProductDetail')->with ('products',$viewProduct);
+    }
 }

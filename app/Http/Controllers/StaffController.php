@@ -100,6 +100,11 @@ public function view(){
     return view('staffShowProduct')->with ('products',$product);
 }
 
+public function productDetail($id){
+    $viewProduct=Product::all()->where('id',$id);
+    return view('staffProductDetail')->with ('products',$viewProduct);
+}
+
 public function edit($id){
     $products=Product::all()->where('id',$id);
     return view('editProduct')->with('products',$products);

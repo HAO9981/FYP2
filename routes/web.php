@@ -35,6 +35,9 @@ Route::post('/addProduct/store',
 Route::get('/showProduct',
 [App\Http\Controllers\ProductController::class,'view'])->name('showProduct');
 
+Route::get('/productDetail/{id}',
+[App\Http\Controllers\ProductController::class,'productDetail'])->name('showProductDetail');
+
 Route::get('/editProduct/{id}',
 [App\Http\Controllers\StaffController::class,'edit'])->name('editProduct');
 
@@ -59,6 +62,9 @@ Route::post('/staffRegister',
 Route::get('/staffShowProduct', 
 [App\Http\Controllers\StaffController::class, 'view'])->name('staffShowProduct');
 
+Route::get('/staffProductDetail/{id}',
+[App\Http\Controllers\StaffController::class,'productDetail'])->name('staffProductDetail');
+
 Route::get('/staffAccount',
 [App\Http\Controllers\StaffController::class,'account'])->name('staffAccount');
 
@@ -67,6 +73,28 @@ Route::get('/staffLogin',
 
 Route::post('/staffLogin', 
 [App\Http\Controllers\StaffController::class, 'login'])->name('staffLoginPost');
+
+Route::get('/staffMenu', 
+[App\Http\Controllers\MenuController::class, 'view'])->name('staffMenu');
+
+Route::get('/addMenu',function(){
+    return view('addMenu');
+})->name('addMenu');
+
+Route::post('/addMenu/store',
+[App\Http\Controllers\MenuController::class,'add'])->name('addMenuPost');
+
+Route::get('/editMenu/{id}',
+[App\Http\Controllers\MenuController::class,'edit'])->name('editMenu');
+
+Route::post('/updateMenu',
+[App\Http\Controllers\MenuController::class,'update'])->name('updateMenu');
+
+Route::get('/menu/delete/{id}',
+[App\Http\Controllers\MenuController::class,'delete'])->name('menu.delete');
+
+Route::get('/menu',
+[App\Http\Controllers\MenuController::class,'viewMenu'])->name('menu');
 
 Auth::routes();
 

@@ -1,34 +1,40 @@
-@extends('layout')
+@extends('staffLayout')
 @section('content')
 <div class="row">
-    <div class="col-sm-3"></div>
-    <div class="col-sm-6">
-        <br><br>
+    <div class="col-md-12 text-center">
         <h3>Edit Menu Info</h3>
+    </div>
+</div>
+<div class='row col-md-11'>
+    <div class="col-md-5 text-center">
+        @foreach($menus as $menu)
+        <img src="{{asset('images')}}/{{$menu->image}}" alt="" width="350" class="img-fluid">
+        @endforeach
+    </div>
+    <div class="col-md-7">
         <form action="{{route('updateMenu')}}" method="POST" enctype="multipart/form-data">
             @csrf
             @foreach($menus as $menu)
             <div class="form-group">
-                <img src="{{asset('images')}}/{{$menu->image}}" alt="" width="100" class="img-fluid"><br>
-            <label for="menuName">Name</label>
-            <input type="hidden" name="id" value="{{$menu->id}}">
-            <input class="form-control" type="text" id="menuName" name="menuName" required value="{{$menu->name}}">
+                <label for="menuName">Name</label>
+                <input type="hidden" name="id" value="{{$menu->id}}">
+                <input class="form-control" type="text" id="menuName" name="menuName" required value="{{$menu->name}}"> 
             </div>
             <div class="form-group">
-				<label for="menuType">Type</label>
-				<select name="menuType" id="menuType" class="form-control" required>
-                    <option value="disabled selected">Please select a type</option>
-                    <option value="snack">snack</option>
-                    <option value="drink">drink</option>
-				</select>
+                <label for="menuType">Type</label>
+                <select name="menuType" id="menuType" class="form-control" required value="{{$menu->type}}">
+                <option value="{{$menu->type}}">{{$menu->type}}</option>
+                <option value="card game">snack</option>
+                <option value="party game">drink</option>
+                </select>
             </div>
             <div class="form-group">
-            <label for="menuPrice">Price</label>
-            <input class="form-control" type="text" id="menuPrice" name="menuPrice" required value="{{$menu->price}}">
+                <label for="menuPrice">Price</label>
+                <input class="form-control" type="text" id="menuPrice" name="menuPrice" required value="{{$menu->price}}">
             </div>
             <div class="form-group">
-            <label for="menuImage">Image</label>
-            <input class="form-control" type="file" id="menuImage" name="menuImage" >
+                <label for="menuImage">Image</label>
+                <input class="form-control" type="file" id="menuImage" name="menuImage" >
             </div>
             <button type="submit" class="btn btn-primary">Update</button>
             @endforeach         
