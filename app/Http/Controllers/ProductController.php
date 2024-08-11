@@ -17,4 +17,9 @@ class ProductController extends Controller
         $viewProduct=Product::all()->where('id',$id);
         return view('showProductDetail')->with ('products',$viewProduct);
     }
+
+    public function home(){
+        $viewProduct=Product::all();
+        return view('homePage')->with ('products',$viewProduct);
+    }
 }

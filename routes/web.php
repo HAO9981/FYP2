@@ -21,6 +21,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/homePage',
+[App\Http\Controllers\ProductController::class,'home'])->name('homePage');
+
 Route::get('/addProduct',function(){
     return view('/addProduct');
 });
