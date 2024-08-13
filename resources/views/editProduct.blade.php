@@ -2,7 +2,7 @@
 @section('content')
 <div class="row">
     <div class="col-md-12 text-center">
-        <h3>Edit Product</h3>
+        <h3>Edit Board Game</h3>
     </div>
 </div>
 <div class='row col-md-11'>
@@ -23,10 +23,11 @@
             <div class="form-group">
                 <label for="productType">Type</label>
                 <select name="productType" id="productType" class="form-control" required value="{{$product->type}}">
-                <option value="disabled selected">{{$product->type}}</option>
-                <option value="card game">card game</option>
-                <option value="party game">party game</option>
-                <option value="chess game">chess game</option>
+                <option value="{{$product->type}}">{{$product->type}}</option>
+                <option value="Card Game">Card Game</option>
+                <option value="Party Game">Party Game</option>
+                <option value="Chess Game">Chess Game</option>
+                <option value="Strategy Game">Strategy Game</option>
                 </select>
             </div>
             <div class="form-group">
@@ -36,6 +37,10 @@
             <div class="form-group">
                 <label for="productImage">Image</label>
                 <input class="form-control" type="file" id="productImage" name="productImage" >
+            </div>
+            <div class="form-group">
+                <label for="productVideo">Video</label>
+                <input class="form-control" type="file" id="productVideo" name="productVideo" >
             </div>
             <button type="submit" class="btn btn-primary">Update</button>
             @endforeach         

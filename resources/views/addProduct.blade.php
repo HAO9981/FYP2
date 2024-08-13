@@ -8,25 +8,29 @@
         <form action="{{route('addProduct')}}" method="post" enctype='multipart/form-data' >
             @csrf
             <div class="form-group">
-				<label for="productName">Name</label>
+				<label for="productName">Board Game Name</label>
 				<input class="form-control" type="text" id="productName" name="productName" required>
             </div>
             <div class="form-group">
-				<label for="productType">Type</label>
+				<label for="productType">Board Game Type</label>
             <select name="productType" id="productType" class="form-control" required>
                <option value="disabled selected">Please select a type</option>
-               <option value="card game">card game</option>
-               <option value="party game">party game</option>
-               <option value="chess game">chess game</option>
+               <option value="Card Game">Card Game</option>
+               <option value="Party Game">Party Game</option>
+               <option value="Chess game">Chess Game</option>
 				</select>
             </div>
             <div class="form-group">
-				<label for="productDescription">Description</label>
+				<label for="productDescription">Board Game Description</label>
 				<textarea class="form-control" type="text" id="productDescription" name="productDescription" rows="5" required></textarea>
             </div>
             <div class="form-group">
-				<label for="productImage">Image</label>
+				<label for="productImage">Board Game Image</label>
 				<input class="form-control" type="file" id="productImage" name="productImage" >
+            </div>
+            <div class="form-group">
+				<label for="productVideo">Video</label>
+				<input class="form-control" type="file" id="productVideo" name="productVideo" >
             </div>
             <button type="submit" class="btn btn-primary">Add New</button>            
         </form>
