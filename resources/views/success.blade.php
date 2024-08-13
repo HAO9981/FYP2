@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h1 class="text-center mb-4">Your Payment Successful</h1>
+    <h1 class="text-center mb-4" style="color: #006400;">Your Payment Successful</h1>
     <ul class="list-group">
         <li class="list-group-item"><strong>Reservation ID:</strong> {{ $reservation->id }}</li>
         <li class="list-group-item"><strong>Table Number:</strong> {{ $reservation->table->number }}</li>
@@ -18,9 +18,8 @@
     <br>
 
     <div class="text-center">
-        <button id="download_pdf_btn" class="btn btn-primary">
-            Download Invoice PDF
-        </button>
+        <a href="{{ route('home') }}" class="btn btn-primary">Home</a>
+        <button id="download_pdf_btn" class="btn btn-danger">Download PDF</button>
     </div>
 </div>
 
@@ -30,23 +29,19 @@
         const downloadPdfBtn = document.getElementById('download_pdf_btn');
         const reservationId = '{{ $reservation->id }}';
 
-        // 从 localStorage 获取价格
         const totalPrice = localStorage.getItem('total_price');
 
-        console.log('Total Price from localStorage:', totalPrice); // 调试输出
+        console.log('Total Price from localStorage:', totalPrice); 
 
-        // 设置显示的价格
         if (totalPrice) {
             totalPriceDisplay.innerText = `RM ${totalPrice}`;
         } else {
             totalPriceDisplay.innerText = 'RM 0.00';
         }
 
-        // 下载 PDF 按钮点击事件
         downloadPdfBtn.addEventListener('click', function () {
             const amountInCents = totalPrice ? Math.round(parseFloat(totalPrice) * 100) : 0;
 
-            // 发送价格数据到服务器
             fetch(`{{ route('download.pdf', ['reservationId' => $reservation->id]) }}?amount=${amountInCents}`, {
                 method: 'GET',
                 headers: {

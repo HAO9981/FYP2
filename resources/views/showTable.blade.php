@@ -13,16 +13,15 @@
         }
     </style>
     <div class="col-sm-3">
-        <div class="left"><!-- 左侧展示区域 -->
+        <div class="left">
             <div class="seat-image">
-                <h2 style="margin-left:118px;">Seat Images</h2>
+                <h2 style="margin-left:68px;">Seat Images</h2>
                 <img id="seatImage" src="{{ asset('images/seat_image.jpg') }}" alt="Seats Image" class="img-fluid">
             </div>
         </div>
     </div>
     <div class="col-sm-7">                
         <div class="right">
-        <!-- 桌子列表表格 -->
             <table class="table table-bordered mt-4">
               <thead>
                   <tr>

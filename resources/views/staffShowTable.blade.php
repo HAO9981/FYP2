@@ -14,16 +14,14 @@
 
                 .right {
                     float: right;
-                    width: 70%; /* 调整右侧内容的宽度，原先是 70% */
+                    width: 70%; 
                     margin-top: 50px;
 
                 }
             </style>
-            <!-- 左侧展示区域 -->
             <div class="left">
                 <h2 class="mb-4" >Upload Image</h2>
                 
-                <!-- 上传图片表单 -->
                 <div class="upload-form">
                     <form action="{{ route('upload.image') }}" method="POST" enctype="multipart/form-data">
                         @csrf
@@ -34,12 +32,10 @@
                     </form>
                 </div>
                 
-                <!-- 图片预览 -->
                 <div class="image-preview">
                     <img id="preview" src="#" alt="Image Preview" style="display: none; width: 300px; height: auto;" />
                 </div>
                 
-                <!-- 座位图片展示 -->
                 <div class="seat-image">
                     <h2 >Seat Images</h2>
                     <img id="seatImage" src="{{ asset('images/seat_image.jpg') }}" alt="Seats Image" class="img-fluid">
