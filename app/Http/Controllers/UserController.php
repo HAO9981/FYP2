@@ -31,6 +31,7 @@ class UserController extends Controller
 
         $user = Auth::user();
         $user->contactNum = $request->input('userContactNum');
+        $user->address = $request->input('userAddress');
         if ($request->filled('newPassword')) {
             $user->password = Hash::make($request->input('newPassword'));
         }

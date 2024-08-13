@@ -35,7 +35,8 @@
             <input class="form-control" type="text" id="userGender" name="userGender" required value="{{ Auth::user()->gender }}" readonly>
             <label>Birthday:</label>
             <input class="form-control" type="date" id="userBirthday" name="userBirthday" required value="{{ Auth::user()->birthday }}" readonly>
-            
+            <label>Address:</label>
+            <input class="form-control" type="text" id="userAddress" name="userAddress" required value="{{ Auth::user()->address }}">
             <br><br>
             <h3>Change Password</h3>
             <label for="currentPassword">Current Password:</label>
