@@ -150,5 +150,8 @@ Route::get('/payment/success', [PaymentController::class, 'paymentSuccess'])->na
 Route::get('/payment/cancel', [PaymentController::class, 'paymentCancel'])->name('payment.cancel');
 
 Route::post('/upload-image', [TableController::class, 'uploadTableImage'])->name('upload.image');
-
+Route::get('/download-pdf/{reservationId}', [PaymentController::class, 'downloadPDF'])->name('download.pdf');
+Route::get('/test-pdf', function () {
+    return PDF::loadHTML('<h1>Test PDF</h1>')->stream();
+});
 
