@@ -90,7 +90,6 @@ public function add(){
         'type'=>$r->productType,
         'description'=>$r->productDescription,
         'image'=>$imageName,
-        'categoryID'=>'1',
     ]);
     return redirect()->route('staffShowProduct');
 }
@@ -120,6 +119,7 @@ public function update(){
         $product->image=$imageName;
     }
     $product->name=$r->productName;
+    $product->type=$r->productType;
     $product->description=$r->productDescription;
     $product->save();
     return redirect()->route('staffShowProduct');
