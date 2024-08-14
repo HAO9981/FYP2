@@ -85,11 +85,20 @@ public function add(){
         $imageName='empty.jpg';
     }
 
+    if ($r->file('productVideo')) {
+        $video = $r->file('productVideo');
+        $videoName = time() . '_' . $video->getClientOriginalName(); // 生成唯一文件名
+        $video->move(public_path('videos'), $videoName); // 将视频移动到 public/videos 目录
+    } else {
+        $videoName = 'default.mp4'; // 如果没有上传视频，可以设置一个默认值
+    }
+
     $add=Product::create([
         'name'=>$r->productName,
         'type'=>$r->productType,
         'description'=>$r->productDescription,
         'image'=>$imageName,
+        'video'=>$videoName,
     ]);
     return redirect()->route('staffShowProduct');
 }

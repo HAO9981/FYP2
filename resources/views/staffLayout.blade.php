@@ -25,18 +25,18 @@
                       <a class="nav-link" href="#">Home<span class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" href="">Book</a>
-                    </li>                 
+                      <a class="nav-link" href="">Reservation</a>
+                    </li>
                     <li class="nav-item active">
                       <a class="nav-link" href="/staffShowProduct">Board Game Library</a>
                     </li>
                     <li class="nav-item active">
                       <a class="nav-link" href="{{route('staffMenu')}}">Menu</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item active">
                         <a class="nav-link" href="/staffShowTable">Table</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item active">
                         <a class="nav-link" href="{{ route('list') }}">List</a>
                     </li>
                   </ul>

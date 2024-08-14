@@ -24,7 +24,7 @@
 				<label for="menuType">Type</label>
 				<select name="menuType" id="menuType" class="form-control" required>
                     <option value="disabled selected">Please select a type</option>
-                    <option value="snack">snack</option>
+                    <option value="food">food</option>
                     <option value="drink">drink</option>
 				</select>
             </div>

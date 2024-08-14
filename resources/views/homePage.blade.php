@@ -5,17 +5,8 @@
         <div class="col-md-12" style="margin: 0; padding: 0;">
             <img src="{{asset('image/Board Game Cafe.jpg')}}" alt="" style="width: 100%; height: 500px; margin: 0; padding: 0;">
             <div class="card" style="border: 2px solid; border-radius: 20px; padding: 15px; background-color: black ; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; text-align: center;">
-            <img src="{{asset('image/Board Game Logo.png')}}" alt="" style="width: 100%; height: 300px; margin: 0; padding: 0;">
-            <h1>STL</h1><h1>Board Game Cafe</h1>
-            </div>
-        </div>
-    </div>
-    <div class="row mt-2">
-        <div class="col-md-12" style="margin: 0; padding: 0;">
-            <img src="{{asset('image/Board Game Intro.webp')}}" alt="" style="width: 100%; height: 450px; margin: 0; padding: 0;">
-            <div class="card" style="border: 2px solid; border-radius: 20px; padding: 15px; background-color: black ; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; text-align: center;">
-            <h3>STL Board Game Cafe is a newly opened board game cafe. In addition to providing board games, 
-                our cafe also provides a large menu for customers to enjoy. In addition, our store has adopted a new system that allows customers to easily book and pay online. Now let's start your board gaming journey today using our website.</h3>
+            <img src="{{asset('image/Board Game Logo.png')}}" alt="" style="max-width: 100%; max-height: 210px; margin: 0; padding: 0;">
+            <h2>STL</h2><h2>Board Game Cafe</h2>
             </div>
         </div>
     </div>

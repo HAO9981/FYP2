@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('type');
             $table->string('description');
             $table->string('image');
+            $table->string('video');
             $table->timestamps();
         });
     }
