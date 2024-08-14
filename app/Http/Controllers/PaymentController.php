@@ -91,14 +91,14 @@ public function paymentSuccess(Request $request)
     // 获取价格参数
     $amount = $request->query('amount', 0);
 
-    // 生成 HTML 内容
+    // 生成 HTML 内容，包含店名和不退款的免责声明
     $html = '
     <!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Reservation Invoice</title>
+        <title>Reservation Invoice - STL Board Game Cafe</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -112,6 +112,12 @@ public function paymentSuccess(Request $request)
             h1 {
                 text-align: center;
                 margin-bottom: 20px;
+                font-size: 24px;
+            }
+            h2 {
+                text-align: center;
+                margin-bottom: 20px;
+                font-size: 18px;
             }
             .list-group {
                 list-style-type: none;
@@ -123,11 +129,18 @@ public function paymentSuccess(Request $request)
             .list-group-item strong {
                 margin-right: 10px;
             }
+            .disclaimer {
+                margin-top: 40px;
+                font-size: 12px;
+                color: #555;
+                text-align: justify;
+            }
         </style>
     </head>
     <body>
         <div class="container">
-            <h1>Reservation Invoice</h1>
+            <h1>STL Board Game Cafe</h1>
+            <h2>Reservation Invoice</h2>
             <ul class="list-group">
                 <li class="list-group-item"><strong>Reservation ID:</strong> ' . $reservation->id . '</li>
                 <li class="list-group-item"><strong>Table Number:</strong> ' . $reservation->table->number . '</li>
@@ -139,6 +152,9 @@ public function paymentSuccess(Request $request)
                 <li class="list-group-item"><strong>End Time:</strong> ' . $reservation->end_time . '</li>
                 <li class="list-group-item"><strong>Total Price:</strong> RM ' . number_format($amount / 100, 2) . '</li>
             </ul>
+            <div class="disclaimer">
+                <p><strong>Disclaimer:</strong> Please note that once the reservation has been confirmed and payment is completed, cancellations or failure to attend the reservation will not be eligible for a refund. All reservations at <strong>STL Board Game Cafe</strong> are final, and no exceptions will be made. We appreciate your understanding and cooperation.</p>
+            </div>
         </div>
     </body>
     </html>';
@@ -148,6 +164,8 @@ public function paymentSuccess(Request $request)
 
     return $pdf->download('reservation_invoice_' . $reservation->id . '.pdf');
 }
+
+
 
 
 

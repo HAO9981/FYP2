@@ -1,22 +1,35 @@
-@extends('layout')
+@extends('staffLayout')
 
 @section('content')
-<div class="d-flex justify-content-center" style="margin-top: 50px;"> <!-- 添加 margin-top 来控制整体下移 -->
-    <div class="row w-100">
-        <div class="col-sm-12 col-md-4 mb-4 d-flex flex-column align-items-center">
-            <h2>Seat Images</h2>
-            <img id="seatImage" src="{{ asset('images/seat_image.jpg') }}" alt="Seats Image" class="img-fluid" style="max-width: 80%;">
+<div class="row">
+    <style>
+        .left {
+            margin-left: 30px;
+            margin-top: 50px;
+        }
+        .right {
+            margin-left: 30px;
+            margin-top: 50px;
+        }
+    </style>
+    <div class="col-sm-3">
+        <div class="left">
+            <div class="seat-image">
+                <h2 style="margin-left:68px;">Seat Images</h2>
+                <img id="seatImage" src="{{ asset('images/seat_image.jpg') }}" alt="Seats Image" class="img-fluid">
+            </div>
         </div>
-
-        <div class="col-sm-12 col-md-8">
+    </div>
+    <div class="col-sm-7">                
+        <div class="right">
             <table class="table table-bordered mt-4">
                 <thead>
                     <tr>
-                        <th>Table No</th>
-                        <th>Image</th>
-                        <th>Type</th>
-                        <th>Price (per hour)</th>
-                        <th>Action</th>
+                        <td>Table No</td>
+                        <td>Image</td>
+                        <td>Type</td>
+                        <td>Price (per hour)</td>
+                        <td>Action</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -30,7 +43,7 @@
                             @if($table->is_reserved)
                                 <button class="btn btn-secondary" disabled>Reserved</button>
                             @else
-                                <a href="{{ route('tableDetail', $table->id) }}" class="btn btn-danger">Book</a>
+                                <a href="{{ route('staffTableDetail', $table->id) }}" class="btn btn-danger">Book</a>
                             @endif
                         </td>
                     </tr>
@@ -39,5 +52,6 @@
             </table>
         </div>
     </div>
+    <div class="col-sm-2"></div>
 </div>
 @endsection
