@@ -4,6 +4,7 @@
     @foreach($products as $product)
     <div class="col-lg-10 col-md-12 col-sm-12" style="margin-bottom: 1cm;">
         <div class="card" style="margin-top: 10px; border: 2px solid; border-radius: 30px; display: flex; flex-direction: column; position: relative;">
+        <input type="hidden" name="id" value="{{$product->id}}">
             <div class="card-body row">
                 <div class="col-lg-4 col-md-4 col-sm-12 text-center">
                     <h1 class="card-title">{{$product->name}}</h1>

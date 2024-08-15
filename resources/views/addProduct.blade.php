@@ -18,7 +18,12 @@
                <option value="Card Game">Card Game</option>
                <option value="Party Game">Party Game</option>
                <option value="Chess game">Chess Game</option>
+               <option value="Strategy Game">Strategy Game</option>
 				</select>
+            </div>
+            <div class="form-group">
+				<label for="productQuantity">Board Game Stock Quantity</label>
+				<input class="form-control" type="text" id="productQuantity" name="productQuantity" required>
             </div>
             <div class="form-group">
 				<label for="productDescription">Board Game Description</label>
@@ -29,7 +34,7 @@
 				<input class="form-control" type="file" id="productImage" name="productImage" >
             </div>
             <div class="form-group">
-				<label for="productVideo">Video</label>
+				<label for="productVideo">Board Game Introduction Video</label>
 				<input class="form-control" type="file" id="productVideo" name="productVideo" >
             </div>
             <button type="submit" class="btn btn-primary">Add New</button>            

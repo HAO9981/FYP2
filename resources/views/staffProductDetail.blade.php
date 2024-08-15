@@ -8,6 +8,7 @@
                 <div class="col-lg-4 col-md-4 col-sm-12 text-center">
                     <h1 class="card-title">{{$product->name}}</h1>
                     <img src="{{asset('images/')}}/{{$product->image}}" alt="" class="img-fluid" style="max-width: 100%;">
+                    <br><br>
                     <a href="{{route('editProduct',['id'=>$product->id])}}" class="btn btn-warning">Edit</a>&nbsp;
                     <a href="{{route('viewProduct.delete', ['id'=>$product->id])}}" class="btn btn-danger">Delete</a>
                 </div>

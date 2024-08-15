@@ -38,6 +38,9 @@ Route::post('/addProduct/store',
 Route::get('/showProduct',
 [App\Http\Controllers\ProductController::class,'view'])->name('showProduct');
 
+Route::post('/searchProduct',
+[App\Http\Controllers\ProductController::class,'search'])->name('searchProduct');
+
 Route::get('/productDetail/{id}',
 [App\Http\Controllers\ProductController::class,'productDetail'])->name('showProductDetail');
 
@@ -98,6 +101,12 @@ Route::get('/menu/delete/{id}',
 
 Route::get('/menu',
 [App\Http\Controllers\MenuController::class,'viewMenu'])->name('menu');
+
+Route::get('/showStock',
+[App\Http\Controllers\ProductController::class,'stock'])->name('showStock');
+
+Route::post('/updateStockQuantity',
+[App\Http\Controllers\ProductController::class,'updateStockQuantity'])->name('updateStockQuantity');
 
 Auth::routes();
 

@@ -9,6 +9,10 @@
     <div class="col-md-5 text-center">
         @foreach($products as $product)
         <img src="{{asset('images')}}/{{$product->image}}" alt="" width="350" class="img-fluid">
+        <br><br>
+        <video muted controls class="img-fluid" style="width: 100%; height: auto;">
+            <source src="{{asset('videos/')}}/{{$product->video}}" type="video/mp4">
+        </video>
         @endforeach
     </div>
     <div class="col-md-7">
@@ -16,12 +20,12 @@
             @csrf
             @foreach($products as $product)
             <div class="form-group">
-                <label for="productName">Name</label>
+                <label for="productName">Board Game Name</label>
                 <input type="hidden" name="id" value="{{$product->id}}">
                 <input class="form-control" type="text" id="productName" name="productName" required value="{{$product->name}}"> 
             </div>
             <div class="form-group">
-                <label for="productType">Type</label>
+                <label for="productType">Board Game Type</label>
                 <select name="productType" id="productType" class="form-control" required value="{{$product->type}}">
                 <option value="{{$product->type}}">{{$product->type}}</option>
                 <option value="Card Game">Card Game</option>
@@ -31,16 +35,16 @@
                 </select>
             </div>
             <div class="form-group">
-                <label for="productDescription">Description</label>
+                <label for="productDescription">Board Game Description</label>
                 <textarea class="form-control" type="text" id="productDescription" name="productDescription" rows="5" required>{{$product->description}}</textarea>
             </div>
             <div class="form-group">
-                <label for="productImage">Image</label>
-                <input class="form-control" type="file" id="productImage" name="productImage" >
+                <label for="productImage">Board Game Image</label>
+                <input class="form-control" type="file" id="productImage" name="productImage">
             </div>
             <div class="form-group">
-                <label for="productVideo">Video</label>
-                <input class="form-control" type="file" id="productVideo" name="productVideo" >
+                <label for="productVideo">Board Game Introduction Video</label>
+                <input class="form-control" type="file" id="productVideo" name="productVideo">
             </div>
             <button type="submit" class="btn btn-primary">Update</button>
             @endforeach         

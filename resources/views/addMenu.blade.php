@@ -17,11 +17,11 @@
         <form action="{{route('addMenuPost')}}" method="post" enctype='multipart/form-data'>
             @csrf
             <div class="form-group">
-				<label for="menuName">Name</label>
+				<label for="menuName">Menu Name</label>
 				<input class="form-control" type="text" id="menuName" name="menuName" required>
             </div>
             <div class="form-group">
-				<label for="menuType">Type</label>
+				<label for="menuType">Menu Type</label>
 				<select name="menuType" id="menuType" class="form-control" required>
                     <option value="disabled selected">Please select a type</option>
                     <option value="food">food</option>
@@ -29,11 +29,11 @@
 				</select>
             </div>
             <div class="form-group">
-				<label for="menuPrice">Price</label>
+				<label for="menuPrice">Menu Price</label>
 				<input class="form-control" type="text" id="menuPrice" name="menuPrice" required>
             </div>
             <div class="form-group">
-				<label for="menuImage">Image</label>
+				<label for="menuImage">Menu Image</label>
 				<input class="form-control" type="file" id="menuImage" name="menuImage">
             </div>
             <button type="submit" class="btn btn-primary">Add New Menu</button>            

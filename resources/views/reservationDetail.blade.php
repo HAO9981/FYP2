@@ -18,7 +18,7 @@
     <div class="d-flex justify-content-between">
         <form id="payment-form" action="{{ route('create.checkout.session') }}" method="POST">
             @csrf
-            <input type="hidden" id="amount" name="amount" value=""> <!-- Amount in cents -->
+            <input type="hidden" id="amount" name="amount" value="">
             <input type="hidden" name="reservation_id" value="{{ $reservation->id }}">
             <button type="submit" class="btn btn-success" style=" margin-left: 470px;">Make Payment</button>
         </form>
@@ -30,18 +30,16 @@
         const totalPriceDisplay = document.getElementById('total_price_display');
         const amountInput = document.getElementById('amount');
 
-        // 从 localStorage 获取价格
         const totalPrice = localStorage.getItem('total_price');
-        
-        // 设置显示的价格
+
         if (totalPrice) {
             totalPriceDisplay.innerText = `RM ${totalPrice}`;
-            // 转换为分并设置到隐藏字段
+
             const amountInCents = Math.round(parseFloat(totalPrice) * 100);
             amountInput.value = amountInCents;
         } else {
             totalPriceDisplay.innerText = 'RM 0.00';
-            amountInput.value = 0; // 默认值为 0
+            amountInput.value = 0;
         }
     });
 </script>

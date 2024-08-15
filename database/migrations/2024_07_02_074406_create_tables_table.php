@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('number');
             $table->string('type');
-            $table->decimal('price', 10, 2)->default(0); // 设置默认值为 0
+            $table->decimal('price', 10, 2)->default(0);
             $table->string('image');
             $table->timestamps();
         });

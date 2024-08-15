@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <div class="container-fluid">
-    <div class="row">
+    <div class="row justify-content-center">
         <div class="col-md-4 text-center">
             <img src="{{asset('image/Board Game Logo.png')}}" alt="" width="240" class="img-fluid">
             <div class="card">

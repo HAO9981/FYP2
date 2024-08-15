@@ -36,7 +36,7 @@ class StaffController extends Controller
 
         if (Auth::guard('staff')->attempt($credentials)) {
             \Log::info('Login successful for user: ' . $request->email);
-            return redirect()->route('staffShowProduct')->with('success', 'Login successful');
+            return redirect()->route('showStock')->with('success', 'Login successful');
         } elseif (Auth::attempt($credentials)) {
             \Log::info('Login successful for user: ' . $request->email);
             return redirect()->route('home')->with('success', 'Login successful');
@@ -49,30 +49,30 @@ class StaffController extends Controller
     }
 
     public function showRegisterForm()
-{
-    return view('auth.staffRegister');
-}
+    {
+        return view('auth.staffRegister');
+    }
 
 
-public function register(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|string|email|max:255|unique:staff',
-        'password' => 'required|string|min:8|confirmed',
-    ]);
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:staff',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
 
-    $staff=Staff::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-        'role' => 'staff',
-    ]);
+        $staff=Staff::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'staff',
+        ]);
 
-    Auth::login($staff);
+        Auth::login($staff);
 
-    return redirect()->route('staffShowProduct')->with('success', 'Staff registered successfully');
-}
+        return redirect()->route('showStock')->with('success', 'Staff registered successfully');
+    }
 
 public function add(){
     $r=request();
@@ -87,16 +87,17 @@ public function add(){
 
     if ($r->file('productVideo')) {
         $video = $r->file('productVideo');
-        $videoName = time() . '_' . $video->getClientOriginalName(); // 生成唯一文件名
-        $video->move(public_path('videos'), $videoName); // 将视频移动到 public/videos 目录
+        $videoName = time() . '_' . $video->getClientOriginalName();
+        $video->move(public_path('videos'), $videoName);
     } else {
-        $videoName = 'default.mp4'; // 如果没有上传视频，可以设置一个默认值
+        $videoName = 'default.mp4';
     }
 
     $add=Product::create([
         'name'=>$r->productName,
         'type'=>$r->productType,
         'description'=>$r->productDescription,
+        'quantity'=>$r->productQuantity,
         'image'=>$imageName,
         'video'=>$videoName,
     ]);
@@ -127,9 +128,18 @@ public function update(){
         $imageName=$image->getClientOriginalName();
         $product->image=$imageName;
     }
+
+    if ($r->file('productVideo')) {
+        $video=$r->file('productVideo');
+        $videoName = time() . '_' . $video->getClientOriginalName();
+        $video->move(public_path('videos'), $videoName);
+        $product->video=$videoName;
+    }
+
     $product->name=$r->productName;
     $product->type=$r->productType;
     $product->description=$r->productDescription;
+    $product->quantity=$r->productQuantity;
     $product->save();
     return redirect()->route('staffShowProduct');
 }
