@@ -14,7 +14,7 @@
             </div>
 
             <div class="form-group">
-                <label for="tableType">Type</label>
+                <label for="tableType">Table Type</label>
                 <select name="tableType" id="tableType" class="form-control">
                     <option value="Big">Big (0-8 persons)</option>
                     <option value="Medium">Medium (0-4 persons)</option>
@@ -23,7 +23,7 @@
             </div>
 
             <div class="form-group">
-                <label for="tablePrice">Price</label>
+                <label for="tablePrice">Table Price</label>
                 <select name="tablePrice" id="tablePrice" class="form-control">
                     <option value="18">Big (1 hour RM 18)</option>
                     <option value="10">Medium (1 hour RM 10)</option>
@@ -32,7 +32,7 @@
             </div>
 
             <div class="form-group">
-                <label for="tableImage">Image</label>
+                <label for="tableImage">Table Image</label>
                 <input class="form-control" type="file" id="tableImage" name="tableImage">
             </div>
 

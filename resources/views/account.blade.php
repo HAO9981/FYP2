@@ -30,13 +30,13 @@
             <label>Email:</label>
             <input class="form-control" type="email" id="userEmail" name="userEmail" required value="{{ Auth::user()->email }}" readonly>
             <label>Contact Number:</label>
-            <input class="form-control" type="text" id="userContactNum" name="userContactNum" required value="{{ Auth::user()->contactNum }}">
+            <input class="form-control" type="text" id="userContactNum" name="userContactNum" required value="{{ Auth::user()->contactNum }}" required>
             <label>Gender:</label>
             <input class="form-control" type="text" id="userGender" name="userGender" required value="{{ Auth::user()->gender }}" readonly>
             <label>Birthday:</label>
             <input class="form-control" type="date" id="userBirthday" name="userBirthday" required value="{{ Auth::user()->birthday }}" readonly>
             <label>Address:</label>
-            <input class="form-control" type="text" id="userAddress" name="userAddress" required value="{{ Auth::user()->address }}">
+            <input class="form-control" type="text" id="userAddress" name="userAddress" required value="{{ Auth::user()->address }}" required>
             <br><br>
             <h3>Change Password</h3>
             <label for="currentPassword">Current Password:</label>

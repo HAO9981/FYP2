@@ -15,7 +15,7 @@
                 <input class="form-control" type="number" id="tableNo" name="tableNo" min="1" max="10" required value="{{ $table->number }}">
 
                 <div class="form-group">
-                    <label for="tableType">Type</label>
+                    <label for="tableType">Table Type</label>
                     <select name="tableType" id="tableType" class="form-control" required>
                         <option value="Big" @if($table->type == 'Big') selected @endif>Big (0-8 person)</option>
                         <option value="Medium" @if($table->type == 'Medium') selected @endif>Medium (0-4 person)</option>
@@ -24,7 +24,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="tablePrice">Price</label>
+                    <label for="tablePrice">Table Price</label>
                     <select name="tablePrice" id="tablePrice" class="form-control" required>
                         <option value="18" @if($table->price == 18) selected @endif>Big (1 hour RM 18)</option>
                         <option value="10" @if($table->price == 10) selected @endif>Medium (1 hour RM 10)</option>
@@ -33,7 +33,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="tableImage">Image</label>
+                    <label for="tableImage">Table Image</label>
                     <input class="form-control" type="file" id="tableImage" name="tableImage">
                 </div>
             </div>

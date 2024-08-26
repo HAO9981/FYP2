@@ -10,7 +10,7 @@
                     <img src="{{asset('images/')}}/{{$product->image}}" alt="" class="img-fluid" style="max-width: 100%;">
                     <br><br>
                     <a href="{{route('editProduct',['id'=>$product->id])}}" class="btn btn-warning">Edit</a>&nbsp;
-                    <a href="{{route('viewProduct.delete', ['id'=>$product->id])}}" class="btn btn-danger">Delete</a>
+                    <a href="{{route('viewProduct.delete', ['id'=>$product->id])}}" class="btn btn-danger" onclick="return confirm('Do you sure want to delete this board game?')">Delete</a>
                 </div>
                 <div class="col-lg-8 col-md-8 col-sm-12">
                     <div class="col-md-12">

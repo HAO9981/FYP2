@@ -30,7 +30,7 @@
                         <h5>RM {{$menu->price}}</h5>
                         <div>
                             <a href="{{route('editMenu',['id'=>$menu->id])}}" class="btn btn-warning">Edit</a>
-                            <a href="{{route('menu.delete',['id'=>$menu->id])}}" class="btn btn-danger">Delete</a>
+                            <a href="{{route('menu.delete',['id'=>$menu->id])}}" class="btn btn-danger" onclick="return confirm('Do you sure want to delete this menu?')">Delete</a>
                         </div>
                     </div>
                 </div>
@@ -60,7 +60,7 @@
                         <h5>RM {{$menu->price}}</h5>
                         <div>
                             <a href="{{route('editMenu',['id'=>$menu->id])}}" class="btn btn-warning">Edit</a>
-                            <a href="{{route('menu.delete',['id'=>$menu->id])}}" class="btn btn-danger">Delete</a>
+                            <a href="{{route('menu.delete',['id'=>$menu->id])}}" class="btn btn-danger" onclick="return confirm('Do you sure want to delete this menu?')">Delete</a>
                         </div>
                     </div>
                 </div>
