@@ -78,11 +78,32 @@ class ReservationController extends Controller
         return view('reservationDetail', compact('reservation'));
     }
 
-    public function list()
-    {
-        $reservations = Reservation::orderBy('id', 'ASC')->get();
-        return view('list', compact('reservations'));
+
+public function list(Request $request)
+{
+    $today = Carbon::today(); // 获取今天的日期
+    $search = $request->input('search'); // 获取搜索条件
+
+    // 如果有搜索条件，则按照搜索条件过滤
+    if ($search) {
+        $reservations = Reservation::whereDate('date', '>=', $today)
+            ->whereHas('table', function($query) use ($search) {
+                $query->where('number', 'like', "%{$search}%");
+            })
+            ->orderBy('date', 'ASC')
+            ->orderBy('start_time', 'ASC')
+            ->paginate(10); // 每页显示 10 条记录
+    } else {
+        $reservations = Reservation::whereDate('date', '>=', $today)
+            ->orderBy('date', 'ASC')
+            ->orderBy('start_time', 'ASC')
+            ->paginate(10); // 每页显示 10 条记录
     }
+
+    return view('list', compact('reservations'));
+}
+
+
 
     /**
      * 显示单个预约的详细信息
@@ -176,6 +197,14 @@ class ReservationController extends Controller
         return $timeOptions;
     }
 
-    
+    // app/Http/Controllers/ReservationController.php
+public function destroy($id)
+{
+    $reservation = Reservation::findOrFail($id);
+    $reservation->delete();
+
+    return redirect()->route('list')->with('success', 'Reservation cancelled successfully.');
+}
+
 
 }

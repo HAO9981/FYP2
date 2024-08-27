@@ -47,7 +47,7 @@
     </table>
 
     <div class="d-flex justify-content-center mt-4">
-        {{ $reservations->appends(request()->input())->links('pagination::simple-bootstrap-4') }}
+        {{ $reservations->appends(request()->query())->links('vendor.pagination.bootstrap-4') }}
     </div>
 </div>
 @endsection

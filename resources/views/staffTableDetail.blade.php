@@ -31,8 +31,8 @@
                         <tr>
                             <td>{{ $slot }}</td>
                             @foreach($tables as $tbl)
-                                <td style="background-color: {{ $availability[$slot][$tbl->id] == 'available' ? 'green' : 'red' }}; color: white;">
-                                    @if($availability[$slot][$tbl->id] == 'available')
+                                <td style="background-color: {{ $availability[$slot][$tbl->id]['status'] == 'available' ? 'green' : 'red' }}; color: white;">
+                                    @if($availability[$slot][$tbl->id]['status'] == 'available')
                                         <!-- 预约链接 -->
                                         <a href="{{ route('staffBookForm', ['table_id' => $tbl->id, 'date' => $date, 'start_time' => $slot]) }}" class="btn btn-light btn-sm">
                                             Book

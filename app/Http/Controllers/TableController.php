@@ -375,10 +375,10 @@ public function staffTableDetail(Request $request)
 {
     $today = Carbon::today()->toDateString();
     $date = $request->input('date', $today);
-    
+
     // 查询所有桌子
     $tables = Table::all()->sortBy('number');
-    
+
     // 生成时间段
     $timeSlots = $this->generateTimeOptions(10, 20, 30);
 
@@ -386,7 +386,10 @@ public function staffTableDetail(Request $request)
     $availability = [];
     foreach ($timeSlots as $slot) {
         foreach ($tables as $table) {
-            $availability[$slot][$table->id] = 'available';
+            $availability[$slot][$table->id] = [
+                'status' => 'available',
+                'reservation_id' => null,
+            ];
 
             $reservations = Reservation::where('table_id', $table->id)
                 ->where('date', $date)
@@ -398,16 +401,20 @@ public function staffTableDetail(Request $request)
                                 ->where('end_time', '>', $this->addInterval($slot));
                         });
                 })
-                ->exists();
+                ->get();
 
-            if ($reservations) {
-                $availability[$slot][$table->id] = 'booked';
+            if ($reservations->isNotEmpty()) {
+                $availability[$slot][$table->id] = [
+                    'status' => 'booked',
+                    'reservation_id' => $reservations->first()->id, // 可以选择第一个预约的 ID
+                ];
             }
         }
     }
 
     return view('staffTableDetail', compact('tables', 'timeSlots', 'availability', 'date'));
 }
+
     private function addInterval($time, $interval = 30)
     {
       $dateTime = \DateTime::createFromFormat('H:i', $time);

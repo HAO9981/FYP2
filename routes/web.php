@@ -167,6 +167,7 @@ Route::get('/test-pdf', function () {
 Route::get('/staff/table-detail', [TableController::class, 'staffTableDetail'])->name('staffTableDetail');
 Route::post('/staff/book', [TableController::class, 'staffBookTable'])->name('staffBookTable');
 Route::get('/staff/book', [TableController::class, 'showStaffBookForm'])->name('staffBookForm');
+Route::delete('/reservations/{id}', [ReservationController::class, 'destroy'])->name('reservations.destroy');
 
 
 
