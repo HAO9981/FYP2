@@ -40,6 +40,13 @@
                 <td>{{ $reservation->end_time }}</td>
                 <td>
                     <a href="{{ route('list.show', $reservation->id) }}" class="btn btn-info btn-sm">View</a>
+
+                    <!-- Delete form -->
+                    <form action="{{ route('reservations.destroy', $reservation->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to cancel this reservation?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                    </form>
                 </td>
             </tr>
             @endforeach
