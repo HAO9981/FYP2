@@ -3,6 +3,16 @@
 @section('content')
 <div class="container mt-4">
     <h1 class="text-center mb-4">All Reservations</h1>
+    
+    <div class="mb-3 d-flex justify-content-end">
+        <form method="GET" action="{{ route('list') }}" class="form-inline">
+            <div class="form-group mr-2">
+                <input type="text" name="search" class="form-control" placeholder="Search by Table Number" value="{{ request('search') }}">
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
@@ -31,8 +41,13 @@
                 <td>
                     <a href="{{ route('list.show', $reservation->id) }}" class="btn btn-info btn-sm">View</a>
                 </td>
+            </tr>
             @endforeach
         </tbody>
     </table>
+
+    <div class="d-flex justify-content-center mt-4">
+        {{ $reservations->appends(request()->input())->links('pagination::simple-bootstrap-4') }}
+    </div>
 </div>
 @endsection

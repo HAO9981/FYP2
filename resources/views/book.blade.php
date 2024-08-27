@@ -28,7 +28,7 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('reservations.store') }}">
+                    <form method="POST" action="{{ route('reservations.store') }}" id="reservationForm">
                         @csrf
                         <input type="hidden" name="table_id" value="{{ $table->id }}">
 
@@ -82,6 +82,25 @@
     </div>
 </div>
 
+<!-- Modal for confirmation -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirm Reservation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to submit this reservation?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmSubmit">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const startTimeInput = document.getElementById('start_time');
@@ -89,6 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const dateInput = document.getElementById('date');
     const totalPriceInput = document.getElementById('total_price');
     const tablePricePerHour = {{ $table->price }};
+    const form = document.getElementById('reservationForm');
 
     function generateTimeOptions(startHour, endHour, stepMinutes) {
         const timeOptions = [];
@@ -162,23 +182,36 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function updateTotalPrice() {
-    const startTime = startTimeInput.value;
-    const endTime = endTimeInput.value;
+        const startTime = startTimeInput.value;
+        const endTime = endTimeInput.value;
 
-    if (startTime && endTime) {
-        const start = new Date(`1970-01-01T${startTime}:00Z`);
-        const end = new Date(`1970-01-01T${endTime}:00Z`);
-        const durationHours = (end - start) / (1000 * 60 * 60);
-        const totalPrice = durationHours * tablePricePerHour;
-        totalPriceInput.value = `RM ${totalPrice.toFixed(2)}`;
-        localStorage.setItem('total_price', totalPrice.toFixed(2));
-    } else {
-        totalPriceInput.value = 'RM 0.00';
-        localStorage.removeItem('total_price');
+        if (startTime && endTime) {
+            const start = new Date(`1970-01-01T${startTime}:00Z`);
+            const end = new Date(`1970-01-01T${endTime}:00Z`);
+            const durationHours = (end - start) / (1000 * 60 * 60);
+            const totalPrice = durationHours * tablePricePerHour;
+            totalPriceInput.value = `RM ${totalPrice.toFixed(2)}`;
+            localStorage.setItem('total_price', totalPrice.toFixed(2));
+        } else {
+            totalPriceInput.value = 'RM 0.00';
+            localStorage.removeItem('total_price');
+        }
     }
-}
 
+    function showConfirmModal() {
+        const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+        confirmModal.show();
+    }
 
+    // Show the custom modal instead of default confirm
+    form.onsubmit = function (event) {
+        event.preventDefault(); // Prevent default form submission
+        showConfirmModal();
+    };
+
+    document.getElementById('confirmSubmit').addEventListener('click', function () {
+        form.submit(); // Submit the form when confirmed
+    });
 
     fetchAvailableTimes('{{ $date }}');
 

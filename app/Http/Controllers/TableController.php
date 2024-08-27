@@ -11,41 +11,34 @@ class TableController extends Controller
 {
     // 添加新桌子
     public function add(Request $request)
-    {
-        // 处理上传的图片
-        $imageName = 'empty.jpg'; // 默认图片
-        if ($request->hasFile('tableImage')) {
-            $image = $request->file('tableImage');
-            $imageName = $image->getClientOriginalName();
-            $image->move(public_path('images'), $imageName);
-        }
-
-        // 根据桌子类型设置价格
-        $price = '';
-        if ($request->tableType === 'Big') {
-            $price = 18;
-        } elseif ($request->tableType === 'Medium') {
-            $price = 10;
-        } elseif ($request->tableType === 'Small') {
-            $price = 6;
-        }
-
-        // 创建桌子记录
-        Table::create([
-            'number' => $request->tableNo,
-            'type' => $request->tableType, // 设置桌子类型
-            'price' => $price, // 设置价格
-            'image' => $imageName,
-            'is_reserved' => false // 确保默认未预约
-        ]);
-
-        return redirect()->route('staffShowTable')->with('success', 'Table added successfully');
+{
+    // 处理上传的图片
+    $imageName = 'empty.jpg'; // 默认图片
+    if ($request->hasFile('tableImage')) {
+        $image = $request->file('tableImage');
+        $imageName = $image->getClientOriginalName();
+        $image->move(public_path('images'), $imageName);
     }
+
+    // 直接使用表单提交的价格
+    $price = $request->input('tablePrice');
+
+    // 创建桌子记录
+    Table::create([
+        'number' => $request->input('tableNo'),
+        'type' => $request->input('tableType'), // 设置桌子类型
+        'price' => $price, // 使用用户输入的价格
+        'image' => $imageName,
+        'is_reserved' => false // 确保默认未预约
+    ]);
+
+    return redirect()->route('staffShowTable')->with('success', 'Table added successfully');
+}
 
     // 显示所有桌子
     public function view()
     {
-        $tables = Table::all();
+        $tables = Table::orderBy('number', 'asc')->get();
         return view('staffShowTable', compact('tables'));
     }
 
@@ -57,48 +50,41 @@ class TableController extends Controller
     }
 
     public function update(Request $request)
-    {
-        // 获取表单提交的所有数据
-        $id = $request->input('id');
-        $tableNo = $request->input('tableNo');
-        $tableType = $request->input('tableType');
+{
+    // 获取表单提交的所有数据
+    $id = $request->input('id');
+    $tableNo = $request->input('tableNo');
+    $tableType = $request->input('tableType');
 
-        // 根据桌子类型设置价格
-        $price = '';
-        if ($tableType === 'Big') {
-            $price = 18;
-        } elseif ($tableType === 'Medium') {
-            $price = 10;
-        } elseif ($tableType === 'Small') {
-            $price = 6;
-        }
+    // 直接使用表单提交的价格
+    $price = $request->input('tablePrice');
 
-        // 找到要更新的桌子
-        $table = Table::findOrFail($id);
+    // 找到要更新的桌子
+    $table = Table::findOrFail($id);
 
-        // 更新桌子信息
-        $table->number = $tableNo;
-        $table->type = $tableType;
-        $table->price = $price;
+    // 更新桌子信息
+    $table->number = $tableNo;
+    $table->type = $tableType;
+    $table->price = $price;
 
-        // 处理上传的图片（如果有）
-        if ($request->hasFile('tableImage')) {
-            $validatedData = $request->validate([
-                'tableImage' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
-            ]);
+    // 处理上传的图片（如果有）
+    if ($request->hasFile('tableImage')) {
+        $validatedData = $request->validate([
+            'tableImage' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
 
-            $image = $request->file('tableImage');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images'), $imageName);
-            $table->image = $imageName;
-        }
-
-        // 保存更新
-        $table->save();
-
-        // 重定向到某个页面
-        return redirect()->route('staffShowTable')->with('success', 'Table updated successfully.');
+        $image = $request->file('tableImage');
+        $imageName = time() . '.' . $image->getClientOriginalExtension();
+        $image->move(public_path('images'), $imageName);
+        $table->image = $imageName;
     }
+
+    // 保存更新
+    $table->save();
+
+    // 重定向到某个页面
+    return redirect()->route('staffShowTable')->with('success', 'Table updated successfully.');
+}
     
     // 删除桌子
     public function delete($id)
@@ -111,7 +97,7 @@ class TableController extends Controller
     // 显示桌子列表给顾客
     public function show()
     {
-        $tables = Table::all(); // 确保包括 is_reserved 状态
+        $tables = Table::orderBy('number', 'asc')->get();
         return view('showTable', compact('tables'));
     }
 
@@ -293,14 +279,16 @@ private function generateTimeOptions($startHour, $endHour, $stepMinutes)
     $table = Table::findOrFail($id);
     $date = $request->input('date', Carbon::now()->format('Y-m-d'));
 
-    $tables = Table::all();
+    // 对 tables 按 id 进行排序
+    $tables = Table::all()->sortBy('number');
+
     $startDate = Carbon::parse($date);
     $endDate = Carbon::parse($date)->addMonths(3);
 
     $reservations = Reservation::whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
         ->get();
 
-    // Generate all time slots
+    // 生成所有时间段
     $timeSlots = [];
     $startTime = Carbon::createFromFormat('H:i', '10:00');
     $endTime = Carbon::createFromFormat('H:i', '20:00');
@@ -318,10 +306,9 @@ private function generateTimeOptions($startHour, $endHour, $stepMinutes)
                     $reservationStartTime = Carbon::parse($reservation->start_time);
                     $reservationEndTime = Carbon::parse($reservation->end_time)->addMinutes(30); // 延迟30分钟
 
-                    // Convert slot to comparable format
                     $slotTime = Carbon::parse($slot);
 
-                    // Check if the slot is within or overlaps with the reservation period
+                    // 检查时间段是否在预定期间内或重叠
                     if ($slotTime >= $reservationStartTime && $slotTime < $reservationEndTime) {
                         $isAvailable = false;
                         break;
@@ -334,6 +321,7 @@ private function generateTimeOptions($startHour, $endHour, $stepMinutes)
 
     return view('tableDetail', compact('table', 'availability', 'timeSlots', 'tables', 'date'));
 }
+
 
 
 

@@ -78,11 +78,26 @@ class ReservationController extends Controller
         return view('reservationDetail', compact('reservation'));
     }
 
-    public function list()
-    {
-        $reservations = Reservation::orderBy('id', 'ASC')->get();
-        return view('list', compact('reservations'));
+    public function list(Request $request)
+{
+    $today = Carbon::today()->toDateString();
+    $search = $request->input('search', '');
+
+    $query = Reservation::where('date', '>=', $today)
+        ->orderBy('date', 'ASC');
+
+    if (!empty($search)) {
+        $query->whereHas('table', function ($query) use ($search) {
+            $query->where('number', 'like', "%$search%");
+        });
     }
+
+    $reservations = $query->paginate(10);
+
+    return view('list', compact('reservations'));
+}
+
+
 
     /**
      * 显示单个预约的详细信息
