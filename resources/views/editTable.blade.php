@@ -24,17 +24,8 @@
                 </div>
 
                 <div class="form-group">
-<<<<<<< Updated upstream
-                    <label for="tablePrice">Table Price</label>
-                    <select name="tablePrice" id="tablePrice" class="form-control" required>
-                        <option value="18" @if($table->price == 18) selected @endif>Big (1 hour RM 18)</option>
-                        <option value="10" @if($table->price == 10) selected @endif>Medium (1 hour RM 10)</option>
-                        <option value="6" @if($table->price == 6) selected @endif>Small (1 hour RM 6)</option>
-                    </select>
-=======
                     <label for="tablePrice">Price (RM)</label>
                     <input class="form-control" type="number" id="tablePrice" name="tablePrice" min="1" step="0.01" required value="{{ $table->price }}">
->>>>>>> Stashed changes
                 </div>
 
                 <div class="form-group">

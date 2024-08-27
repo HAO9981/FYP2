@@ -23,17 +23,8 @@
             </div>
 
             <div class="form-group">
-<<<<<<< Updated upstream
-                <label for="tablePrice">Table Price</label>
-                <select name="tablePrice" id="tablePrice" class="form-control">
-                    <option value="18">Big (1 hour RM 18)</option>
-                    <option value="10">Medium (1 hour RM 10)</option>
-                    <option value="6">Small (1 hour RM 6)</option>
-                </select>
-=======
                 <label for="tablePrice">Price (RM per hour)</label>
                 <input class="form-control" type="number" id="tablePrice" name="tablePrice" step="0.01" min="0" required>
->>>>>>> Stashed changes
             </div>
 
             <div class="form-group">
