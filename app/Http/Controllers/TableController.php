@@ -460,8 +460,10 @@ public function staffTableDetail(Request $request)
         'end_time' => $request->end_time,
     ]);
 
-    return redirect()->route('staffTableDetail')->with('success', 'Reservation made successfully.');
+    // Redirect back to the selected date
+    return redirect()->route('staffTableDetail', ['date' => $request->date])->with('success', 'Reservation made successfully.');
 }
+
 
     public function showStaffBookForm(Request $request)
     {
