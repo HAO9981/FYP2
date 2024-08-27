@@ -22,6 +22,7 @@
             <div class="form-group">
                 <label for="productName">Board Game Name</label>
                 <input type="hidden" name="id" value="{{$product->id}}">
+                <input type="hidden" name="productQuantity" value="{{$product->quantity}}">
                 <input class="form-control" type="text" id="productName" name="productName" required value="{{$product->name}}"> 
             </div>
             <div class="form-group">
