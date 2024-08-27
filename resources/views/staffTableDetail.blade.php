@@ -1,57 +1,52 @@
 @extends('staffLayout')
 
 @section('content')
-<div class="row">
-    <style>
-        .left {
-            margin-left: 30px;
-            margin-top: 50px;
-        }
-        .right {
-            margin-left: 30px;
-            margin-top: 50px;
-        }
-    </style>
-    <div class="col-sm-3">
-        <div class="left">
-            <div class="seat-image">
-                <h2 style="margin-left:68px;">Seat Images</h2>
-                <img id="seatImage" src="{{ asset('images/seat_image.jpg') }}" alt="Seats Image" class="img-fluid">
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-7">                
-        <div class="right">
-            <table class="table table-bordered mt-4">
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Table Booking Status</h3>
+
+            <!-- 日期选择表单 -->
+            <form method="GET" action="{{ route('staffTableDetail') }}">
+                <div class="form-group">
+                    <label for="date">Select Date:</label>
+                    <input type="date" id="date" name="date" class="form-control" value="{{ $date }}" min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" max="{{ \Carbon\Carbon::now()->addMonths(3)->format('Y-m-d') }}">
+                </div>
+                <button type="submit" class="btn btn-primary">Show Status</button>
+            </form>
+            <br>
+
+            <!-- 状态表格 -->
+            <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <td>Table No</td>
-                        <td>Image</td>
-                        <td>Type</td>
-                        <td>Price (per hour)</td>
-                        <td>Action</td>
+                        <th>Time</th>
+                        @foreach($tables as $tbl)
+                            <th>Table {{ $tbl->number }}</th>
+                        @endforeach
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($tables as $table)
-                    <tr>
-                        <td>{{ $table->number }}</td>
-                        <td><img src="{{ asset('images') }}/{{ $table->image }}" alt="" width="100" class="img-fluid"></td>
-                        <td>{{ $table->type }}</td>
-                        <td>RM {{ $table->price }}</td>
-                        <td>
-                            @if($table->is_reserved)
-                                <button class="btn btn-secondary" disabled>Reserved</button>
-                            @else
-                                <a href="{{ route('staffTableDetail', $table->id) }}" class="btn btn-danger">Book</a>
-                            @endif
-                        </td>
-                    </tr>
+                    @foreach($timeSlots as $slot)
+                        <tr>
+                            <td>{{ $slot }}</td>
+                            @foreach($tables as $tbl)
+                                <td style="background-color: {{ $availability[$slot][$tbl->id] == 'available' ? 'green' : 'red' }}; color: white;">
+                                    @if($availability[$slot][$tbl->id] == 'available')
+                                        <!-- 预约链接 -->
+                                        <a href="{{ route('staffBookForm', ['table_id' => $tbl->id, 'date' => $date, 'start_time' => $slot]) }}" class="btn btn-light btn-sm">
+                                            Book
+                                        </a>
+                                    @else
+                                        Booked
+                                    @endif
+                                </td>
+                            @endforeach
+                        </tr>
                     @endforeach
                 </tbody>
             </table>
         </div>
     </div>
-    <div class="col-sm-2"></div>
 </div>
 @endsection

@@ -31,6 +31,7 @@
                     <form method="POST" action="{{ route('reservations.store') }}" id="reservationForm">
                         @csrf
                         <input type="hidden" name="table_id" value="{{ $table->id }}">
+                        <input type="hidden" name="date" value="{{ $date }}">
 
                         <div class="form-group">
                             <label for="name">Name:</label>
@@ -109,6 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const totalPriceInput = document.getElementById('total_price');
     const tablePricePerHour = {{ $table->price }};
     const form = document.getElementById('reservationForm');
+    const initialStartTime = "{{ $startTime }}"; // Use the value passed from the backend
 
     function generateTimeOptions(startHour, endHour, stepMinutes) {
         const timeOptions = [];
@@ -138,14 +140,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 const availableStartTimes = allTimes.filter(time => !unavailableTimes.includes(time));
                 setTimeOptions(startTimeInput, availableStartTimes);
 
-                updateEndTimeOptions();
-                updateTotalPrice(); // Ensure the price is calculated initially
+                if (initialStartTime) {
+                    startTimeInput.value = initialStartTime;
+                    updateEndTimeOptions(initialStartTime);
+                }
 
                 startTimeInput.addEventListener('change', function() {
-                    updateEndTimeOptions();
+                    updateEndTimeOptions(this.value);
                     updateTotalPrice(); // Update price when start time changes
                 });
                 endTimeInput.addEventListener('change', updateTotalPrice);
+
+                updateTotalPrice(); // Ensure the price is calculated initially
             })
             .catch(error => {
                 console.error('Error fetching available times:', error);
@@ -162,15 +168,9 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function updateEndTimeOptions() {
-        const selectedStartTime = startTimeInput.value;
-        if (!selectedStartTime) {
-            setTimeOptions(endTimeInput, []);
-            return;
-        }
-
+    function updateEndTimeOptions(startTime) {
         const allTimes = generateTimeOptions(10, 20, 30); // 10 AM to 8 PM
-        const delayedStartTime = new Date(`1970-01-01T${selectedStartTime}:00Z`);
+        const delayedStartTime = new Date(`1970-01-01T${startTime}:00Z`);
         delayedStartTime.setMinutes(delayedStartTime.getMinutes() + 30);
         const delayedStartTimeString = delayedStartTime.toISOString().substr(11, 5);
 

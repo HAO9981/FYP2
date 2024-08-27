@@ -34,6 +34,9 @@
                         <a class="nav-link" href="/staffShowTable">Table</a>
                     </li>
                     <li class="nav-item active">
+                      <a href="{{ route('staffTableDetail') }}" class="nav-link">BookingStatus</a>
+                    </li>
+                    <li class="nav-item active">
                         <a class="nav-link" href="{{ route('list') }}">List</a>
                     </li>
                   </ul>

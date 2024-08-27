@@ -164,5 +164,10 @@ Route::get('/test-pdf', function () {
     return PDF::loadHTML('<h1>Test PDF</h1>')->stream();
 });
 
+Route::get('/staff/table-detail', [TableController::class, 'staffTableDetail'])->name('staffTableDetail');
+Route::post('/staff/book', [TableController::class, 'staffBookTable'])->name('staffBookTable');
+Route::get('/staff/book', [TableController::class, 'showStaffBookForm'])->name('staffBookForm');
+
+
 
 

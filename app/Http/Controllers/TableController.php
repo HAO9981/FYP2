@@ -371,6 +371,101 @@ public function uploadTableImage(Request $request)
     return redirect()->back()->with('success', 'Image uploaded successfully!');
 }
 
+public function staffTableDetail(Request $request)
+{
+    $today = Carbon::today()->toDateString();
+    $date = $request->input('date', $today);
+    
+    // 查询所有桌子
+    $tables = Table::all()->sortBy('number');
+    
+    // 生成时间段
+    $timeSlots = $this->generateTimeOptions(10, 20, 30);
+
+    // 获取日期和时间段的预约状态
+    $availability = [];
+    foreach ($timeSlots as $slot) {
+        foreach ($tables as $table) {
+            $availability[$slot][$table->id] = 'available';
+
+            $reservations = Reservation::where('table_id', $table->id)
+                ->where('date', $date)
+                ->where(function ($query) use ($slot) {
+                    $query->whereBetween('start_time', [$slot, $this->addInterval($slot)])
+                        ->orWhereBetween('end_time', [$slot, $this->addInterval($slot)])
+                        ->orWhere(function ($query) use ($slot) {
+                            $query->where('start_time', '<', $slot)
+                                ->where('end_time', '>', $this->addInterval($slot));
+                        });
+                })
+                ->exists();
+
+            if ($reservations) {
+                $availability[$slot][$table->id] = 'booked';
+            }
+        }
+    }
+
+    return view('staffTableDetail', compact('tables', 'timeSlots', 'availability', 'date'));
+}
+    private function addInterval($time, $interval = 30)
+    {
+      $dateTime = \DateTime::createFromFormat('H:i', $time);
+      $dateTime->modify("+{$interval} minutes");
+       return $dateTime->format('H:i');
+    }
+
+    public function staffBookTable(Request $request)
+{
+    $request->validate([
+        'table_id' => 'required|exists:tables,id',
+        'date' => 'required|date',
+        'start_time' => 'required|date_format:H:i',
+        'end_time' => 'required|date_format:H:i|after:start_time',
+    ]);
+
+    $startDateTime = Carbon::parse($request->date . ' ' . $request->start_time);
+    $endDateTime = Carbon::parse($request->date . ' ' . $request->end_time);
+
+    $conflictingReservations = Reservation::where('table_id', $request->table_id)
+        ->where('date', $request->date)
+        ->where(function ($query) use ($startDateTime, $endDateTime) {
+            $query->where(function ($q) use ($startDateTime, $endDateTime) {
+                $q->whereBetween('start_time', [$startDateTime, $endDateTime])
+                    ->orWhereBetween('end_time', [$startDateTime, $endDateTime])
+                    ->orWhereRaw('? BETWEEN start_time AND end_time', [$startDateTime])
+                    ->orWhereRaw('? BETWEEN start_time AND end_time', [$endDateTime]);
+            });
+        })
+        ->exists();
+
+    if ($conflictingReservations) {
+        return back()->withErrors(['error' => 'The selected time slot is already reserved. Please choose a different time.']);
+    }
+
+    Reservation::create([
+        'table_id' => $request->table_id,
+        'name' => 'Staff Booking', // Store "Staff Booking" as the name
+        'email' => '', // Empty email
+        'phone' => '', // Empty phone
+        'date' => $request->date,
+        'start_time' => $request->start_time,
+        'end_time' => $request->end_time,
+    ]);
+
+    return redirect()->route('staffTableDetail')->with('success', 'Reservation made successfully.');
+}
+
+    public function showStaffBookForm(Request $request)
+    {
+       $tableId = $request->input('table_id');
+       $date = $request->input('date');
+       $startTime = $request->input('start_time');
+
+       $table = Table::findOrFail($tableId);
+
+       return view('staffBook', compact('table', 'date', 'startTime'));
+    }
 
 
 }
