@@ -33,18 +33,18 @@
     <div class="row mt-4">
         <div class="col-md-8">
             <h3>Phone Number:</h3>
-            <h4>07-558 6605</h4>
+            <h4>07-XXX XXXX</h4>
             <h3>Email:</h3>
-            <h4>southern@sc.edu.my</h4>
+            <h4>XXXXX@gmail.com</h4>
             <h3>Location:</h3>
-            <h4>PTD 64888, Jalan Selatan Utama, KM 15, Off, Skudai Lbh, 81300 Skudai, Johor</h4>
+            <h4>XX, Jalan XXX, Taman XXXXX, 81300 Skudai, Johor</h4>
         </div>
         <div class="col-md-4">
             <iframe
                 width="100%"
                 height="300"
-                frameborder="0" style="border:0"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.3891161303563!2d103.67928727371631!3d1.533632060960169!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31da73c109632e0b%3A0x74cda51bf210c304!2z5Y2X5pa55aSn5a2m5a2m6Zmi!5e0!3m2!1szh-CN!2smy!4v1704959981142!5m2!1szh-CN!2smy"
+                frameborder="0" style="border: 2px dashed #ccc;"
+                src=""
                 allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
             </iframe>
         </div>
