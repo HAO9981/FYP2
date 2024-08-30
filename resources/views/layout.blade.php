@@ -45,6 +45,9 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="/showTable">Table</a>
                 </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ route('customer.reservations') }}">My Reservations</a>
+                </li>
               </ul>
               <ul class="navbar-nav">
                 <li class="nav-item">

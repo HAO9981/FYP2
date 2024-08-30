@@ -206,5 +206,32 @@ public function destroy($id)
     return redirect()->route('list')->with('success', 'Reservation cancelled successfully.');
 }
 
+public function cusList(Request $request)
+{
+    $user = auth()->user(); // 获取当前登录的顾客
+
+    $query = Reservation::where('email', $user->email);
+
+    // 检查是否有搜索参数
+    if ($request->has('table_number') && !empty($request->input('table_number'))) {
+        $tableNumber = $request->input('table_number');
+        $query->whereHas('table', function ($q) use ($tableNumber) {
+            $q->where('number', 'like', "%{$tableNumber}%");
+        });
+    }
+
+    $reservations = $query
+        ->orderBy('date', 'asc')
+        ->paginate(10); // 每页显示 10 条记录
+
+    return view('cusList', compact('reservations'));
+}
+
+public function cusShowList($reservationId)
+{
+    $reservation = Reservation::findOrFail($reservationId);
+    return view('cusListView', compact('reservation'));
+}
+
 
 }
