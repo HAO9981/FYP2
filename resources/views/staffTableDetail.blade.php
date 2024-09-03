@@ -31,12 +31,24 @@
                         <tr>
                             <td>{{ $slot }}</td>
                             @foreach($tables as $tbl)
-                                <td style="background-color: {{ $availability[$slot][$tbl->id]['status'] == 'available' ? 'green' : 'red' }}; color: white;">
-                                    @if($availability[$slot][$tbl->id]['status'] == 'available')
-                                        <!-- 预约链接 -->
+                                @php
+                                    $status = $availability[$slot][$tbl->id] ?? 'available';
+                                @endphp
+                                <td style="background-color: 
+                                    @if($status == 'past')
+                                        orange
+                                    @elseif($status == 'available')
+                                        green
+                                    @else
+                                        red
+                                    @endif
+                                ; color: white;">
+                                    @if($status == 'available')
                                         <a href="{{ route('staffBookForm', ['table_id' => $tbl->id, 'date' => $date, 'start_time' => $slot]) }}" class="btn btn-light btn-sm">
                                             Book
                                         </a>
+                                    @elseif($status == 'past')
+                                        Past
                                     @else
                                         Booked
                                     @endif

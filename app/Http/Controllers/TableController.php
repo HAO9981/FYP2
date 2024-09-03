@@ -153,13 +153,16 @@ public function book($id, Request $request)
     ->where('date', $request->date)
     ->where(function ($query) use ($startDateTime, $endDateTime) {
         $query->where(function ($q) use ($startDateTime, $endDateTime) {
-            $q->whereBetween('start_time', [$startDateTime, $endDateTime])
-                ->orWhereBetween('end_time', [$startDateTime, $endDateTime])
-                ->orWhereRaw('? BETWEEN start_time AND end_time', [$startDateTime])
-                ->orWhereRaw('? BETWEEN start_time AND end_time', [$endDateTime]);
+            $q->where(function ($q) use ($startDateTime, $endDateTime) {
+                $q->whereBetween('start_time', [$startDateTime, $endDateTime])
+                    ->orWhereBetween('end_time', [$startDateTime, $endDateTime])
+                    ->orWhereRaw('? BETWEEN start_time AND end_time', [$startDateTime])
+                    ->orWhereRaw('? BETWEEN start_time AND end_time', [$endDateTime]);
+            });
         });
     })
     ->exists();
+
 
 
     if ($conflictingReservations) {
@@ -184,10 +187,11 @@ public function getAvailableTimes(Request $request)
 {
     $tableId = $request->input('table_id');
     $date = $request->input('date');
+    $startTime = $request->input('start_time');
 
     // 查询当天已有的预约
     $reservations = Reservation::where('table_id', $tableId)
-        ->where('date', $date)
+        ->where('date', $date) // 确保是当前日期的预约
         ->get();
 
     $bookedTimes = $reservations->map(function ($reservation) {
@@ -197,7 +201,7 @@ public function getAvailableTimes(Request $request)
         ];
     })->toArray();
 
-    $allTimes = $this->generateTimeOptions(10, 20, 30); // 例如10AM到8PM
+    $allTimes = $this->generateTimeOptions(10, 22, 30); // 例如10AM到10PM
 
     // 增加处理结束时间边界
     $adjustedBookedTimes = array_map(function($time) {
@@ -209,51 +213,27 @@ public function getAvailableTimes(Request $request)
         ];
     }, $bookedTimes);
 
-    // 计算不可用时间（分为两个区间）
-    $unavailableTimes = array_filter($allTimes, function ($time) use ($adjustedBookedTimes) {
+    // 计算不可用时间段，确保比较时是基于日期和时间的
+    $unavailableTimes = array_filter($allTimes, function ($time) use ($adjustedBookedTimes, $date) {
+        $currentTime = new \DateTime($date . ' ' . $time);
         foreach ($adjustedBookedTimes as $booked) {
-            $timeDateTime = new \DateTime($time);
-            $startDateTime = new \DateTime($booked['start_time']);
-            $endDateTime = new \DateTime($booked['end_time']);
+            $startDateTime = new \DateTime($date . ' ' . $booked['start_time']);
+            $endDateTime = new \DateTime($date . ' ' . $booked['end_time']);
             
-            // Check if the time is within any booked range
-            if ($timeDateTime >= $startDateTime && $timeDateTime < $endDateTime) {
+            if ($currentTime >= $startDateTime && $currentTime < $endDateTime) {
                 return true;
             }
         }
         return false;
     });
 
-    // 将所有时间分为00-29和30-59的区间
-    $timeSlots = [];
-    foreach ($allTimes as $time) {
-        $hour = (new \DateTime($time))->format('H');
-        $minute = (new \DateTime($time))->format('i');
-
-        // 判断是属于00-29还是30-59
-        if ($minute < 30) {
-            $timeSlots["{$hour}:00-{$hour}:29"][] = $time;
-        } else {
-            $timeSlots["{$hour}:30-{$hour}:59"][] = $time;
-        }
-    }
-
-    // 筛选可用时间
-    $availableTimes = [];
-    foreach ($timeSlots as $range => $times) {
-        if (!array_intersect($times, $unavailableTimes)) {
-            $availableTimes = array_merge($availableTimes, $times);
-        }
-    }
+    $availableTimes = array_diff($allTimes, $unavailableTimes);
 
     return response()->json([
         'available_times' => array_values($availableTimes),
         'unavailable_times' => array_values($unavailableTimes),
     ]);
 }
-
-
-
 
 private function generateTimeOptions($startHour, $endHour, $stepMinutes)
 {
@@ -266,11 +246,13 @@ private function generateTimeOptions($startHour, $endHour, $stepMinutes)
 
     while ($currentTime <= $endTime) {
         $timeOptions[] = $currentTime->format('H:i');
-        $currentTime->modify("+{$stepMinutes} minutes");
+        $currentTime->add(new \DateInterval('PT' . $stepMinutes . 'M'));
     }
 
     return $timeOptions;
 }
+
+
 
 
     // 显示桌子详情，展示三个月内的桌子信息
@@ -279,16 +261,10 @@ private function generateTimeOptions($startHour, $endHour, $stepMinutes)
     $table = Table::findOrFail($id);
     $date = $request->input('date', Carbon::now()->format('Y-m-d'));
 
-    // 对 tables 按 id 进行排序
+    // 获取并排序所有桌子
     $tables = Table::all()->sortBy('number');
 
-    $startDate = Carbon::parse($date);
-    $endDate = Carbon::parse($date)->addMonths(3);
-
-    $reservations = Reservation::whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
-        ->get();
-
-    // 生成所有时间段
+    // 生成所选日期的时间段
     $timeSlots = [];
     $startTime = Carbon::createFromFormat('H:i', '10:00');
     $endTime = Carbon::createFromFormat('H:i', '20:00');
@@ -297,6 +273,10 @@ private function generateTimeOptions($startHour, $endHour, $stepMinutes)
         $startTime->addMinutes(30);
     }
 
+    // 获取选定日期的所有预订
+    $reservations = Reservation::where('date', $date)->get();
+
+    // 计算可用性
     $availability = [];
     foreach ($timeSlots as $slot) {
         foreach ($tables as $tbl) {
@@ -304,11 +284,11 @@ private function generateTimeOptions($startHour, $endHour, $stepMinutes)
             foreach ($reservations as $reservation) {
                 if ($reservation->table_id == $tbl->id) {
                     $reservationStartTime = Carbon::parse($reservation->start_time);
-                    $reservationEndTime = Carbon::parse($reservation->end_time)->addMinutes(30); // 延迟30分钟
+                    $reservationEndTime = Carbon::parse($reservation->end_time)->addMinutes(30);
 
                     $slotTime = Carbon::parse($slot);
 
-                    // 检查时间段是否在预定期间内或重叠
+                    // 检查时间段是否在预定期间内
                     if ($slotTime >= $reservationStartTime && $slotTime < $reservationEndTime) {
                         $isAvailable = false;
                         break;
@@ -373,47 +353,48 @@ public function uploadTableImage(Request $request)
 
 public function staffTableDetail(Request $request)
 {
-    $today = Carbon::today()->toDateString();
-    $date = $request->input('date', $today);
+    $date = $request->input('date', Carbon::now()->format('Y-m-d'));
 
     // 查询所有桌子
     $tables = Table::all()->sortBy('number');
 
     // 生成时间段
-    $timeSlots = $this->generateTimeOptions(10, 20, 30);
+    $timeSlots = $this->generateTimeOptions(10, 20, 30); // 使用相同的时间段生成逻辑
 
-    // 获取日期和时间段的预约状态
+    $startDate = Carbon::parse($date);
+    $endDate = Carbon::parse($date)->addMonths(3); // 确保日期范围一致
+
+    $reservations = Reservation::whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+        ->get();
+
+    // 计算可用性
     $availability = [];
     foreach ($timeSlots as $slot) {
-        foreach ($tables as $table) {
-            $availability[$slot][$table->id] = [
-                'status' => 'available',
-                'reservation_id' => null,
-            ];
+        foreach ($tables as $tbl) {
+            $availability[$slot][$tbl->id] = 'available'; // 默认设置为 'available'
+            foreach ($reservations as $reservation) {
+                if ($reservation->table_id == $tbl->id && $reservation->date == $date) {
+                    $reservationStartTime = Carbon::parse($reservation->start_time);
+                    $reservationEndTime = Carbon::parse($reservation->end_time)->addMinutes(30);
 
-            $reservations = Reservation::where('table_id', $table->id)
-                ->where('date', $date)
-                ->where(function ($query) use ($slot) {
-                    $query->whereBetween('start_time', [$slot, $this->addInterval($slot)])
-                        ->orWhereBetween('end_time', [$slot, $this->addInterval($slot)])
-                        ->orWhere(function ($query) use ($slot) {
-                            $query->where('start_time', '<', $slot)
-                                ->where('end_time', '>', $this->addInterval($slot));
-                        });
-                })
-                ->get();
+                    $slotTime = Carbon::parse($slot);
 
-            if ($reservations->isNotEmpty()) {
-                $availability[$slot][$table->id] = [
-                    'status' => 'booked',
-                    'reservation_id' => $reservations->first()->id, // 可以选择第一个预约的 ID
-                ];
+                    if ($slotTime >= $reservationStartTime && $slotTime < $reservationEndTime) {
+                        $availability[$slot][$tbl->id] = 'booked';
+                        break;
+                    }
+                }
             }
         }
     }
 
     return view('staffTableDetail', compact('tables', 'timeSlots', 'availability', 'date'));
 }
+
+
+
+
+
 
     private function addInterval($time, $interval = 30)
     {

@@ -170,5 +170,4 @@ Route::get('/staff/book', [TableController::class, 'showStaffBookForm'])->name('
 Route::delete('/reservations/{id}', [ReservationController::class, 'destroy'])->name('reservations.destroy');
 
 Route::get('/my-reservations', [ReservationController::class, 'cusList'])->name('customer.reservations')->middleware('auth');
-Route::get('/list/{reservation}', [ReservationController::class, 'cusShowList'])->name('cuslist.show');
-
+Route::get('/customer-list/{reservation}', [ReservationController::class, 'cusShowList'])->name('cuslist.show');
