@@ -19,7 +19,16 @@
                     <tr>
                         <td>{{ $table->number }}</td>
                         <td><img src="{{ asset('images') }}/{{ $table->image }}" alt="" width="100" class="img-fluid"></td>
-                        <td>{{ $table->type }}</td>
+                        <td>
+                            {{ $table->type }} 
+                            @if($table->type == 'Big')
+                                (Max 8 persons)
+                            @elseif($table->type == 'Medium')
+                                (Max 4 persons)
+                            @elseif($table->type == 'Small')
+                                (Max 2 persons)
+                            @endif
+                        </td>
                         <td>RM {{ $table->price }}</td>
                     </tr>
                     @endforeach

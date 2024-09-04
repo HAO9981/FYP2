@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(`/api/available-times?table_id=${tableId}&date=${date}&start_time=${startTime}`)
             .then(response => response.json())
             .then(data => {
-                const allTimes = generateTimeOptions(10, 22, 30); // 10 AM to 10 PM
+                const allTimes = generateTimeOptions(10, 20, 30); // 10 AM to 10 PM
                 const unavailableTimes = data.unavailable_times || [];
 
                 const availableEndTimes = allTimes.filter(time => {

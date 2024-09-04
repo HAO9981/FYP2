@@ -12,6 +12,12 @@ class TableController extends Controller
     // 添加新桌子
     public function add(Request $request)
 {
+    // 验证桌号是否已经存在
+    $existingTable = Table::where('number', $request->input('tableNo'))->first();
+    if ($existingTable) {
+        return redirect()->back()->withErrors(['error' => 'Table number already exists.'])->withInput();
+    }
+
     // 处理上传的图片
     $imageName = 'empty.jpg'; // 默认图片
     if ($request->hasFile('tableImage')) {
@@ -26,14 +32,16 @@ class TableController extends Controller
     // 创建桌子记录
     Table::create([
         'number' => $request->input('tableNo'),
-        'type' => $request->input('tableType'), // 设置桌子类型
-        'price' => $price, // 使用用户输入的价格
+        'type' => $request->input('tableType'),
+        'price' => $price,
         'image' => $imageName,
-        'is_reserved' => false // 确保默认未预约
+        'is_reserved' => false // 默认未预约
     ]);
 
     return redirect()->route('staffShowTable')->with('success', 'Table added successfully');
 }
+
+
 
     // 显示所有桌子
     public function view()
@@ -51,16 +59,28 @@ class TableController extends Controller
 
     public function update(Request $request)
 {
-    // 获取表单提交的所有数据
+    // 验证输入
+    $validatedData = $request->validate([
+        'id' => 'required|exists:tables,id',
+        'tableNo' => 'required|integer|min:1',
+        'tableType' => 'required|string',
+        'tablePrice' => 'required|numeric|min:0',
+        'tableImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+    ]);
+
     $id = $request->input('id');
     $tableNo = $request->input('tableNo');
     $tableType = $request->input('tableType');
-
-    // 直接使用表单提交的价格
     $price = $request->input('tablePrice');
 
     // 找到要更新的桌子
     $table = Table::findOrFail($id);
+
+    // 检查桌号是否已被其他桌子使用
+    $existingTable = Table::where('number', $tableNo)->where('id', '<>', $id)->first();
+    if ($existingTable) {
+        return redirect()->back()->withErrors(['error' => 'Table number already exists.'])->withInput();
+    }
 
     // 更新桌子信息
     $table->number = $tableNo;
@@ -69,10 +89,6 @@ class TableController extends Controller
 
     // 处理上传的图片（如果有）
     if ($request->hasFile('tableImage')) {
-        $validatedData = $request->validate([
-            'tableImage' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
-
         $image = $request->file('tableImage');
         $imageName = time() . '.' . $image->getClientOriginalExtension();
         $image->move(public_path('images'), $imageName);
@@ -85,6 +101,7 @@ class TableController extends Controller
     // 重定向到某个页面
     return redirect()->route('staffShowTable')->with('success', 'Table updated successfully.');
 }
+
     
     // 删除桌子
     public function delete($id)
@@ -201,7 +218,7 @@ public function getAvailableTimes(Request $request)
         ];
     })->toArray();
 
-    $allTimes = $this->generateTimeOptions(10, 22, 30); // 例如10AM到10PM
+    $allTimes = $this->generateTimeOptions(10, 20, 30); // 例如10AM到10PM
 
     // 增加处理结束时间边界
     $adjustedBookedTimes = array_map(function($time) {
@@ -276,17 +293,27 @@ private function generateTimeOptions($startHour, $endHour, $stepMinutes)
     // 获取选定日期的所有预订
     $reservations = Reservation::where('date', $date)->get();
 
+    // 获取当前时间和日期
+    $currentDate = Carbon::now()->format('Y-m-d');
+    $currentTime = Carbon::now()->format('H:i');
+
     // 计算可用性
     $availability = [];
     foreach ($timeSlots as $slot) {
         foreach ($tables as $tbl) {
             $isAvailable = true;
+            $slotTime = Carbon::parse($slot);
+
+            // 检查时间段是否已经过去
+            if ($date == $currentDate && $slotTime < Carbon::parse($currentTime)) {
+                $availability[$slot][$tbl->id] = 'past';
+                continue;
+            }
+
             foreach ($reservations as $reservation) {
                 if ($reservation->table_id == $tbl->id) {
                     $reservationStartTime = Carbon::parse($reservation->start_time);
                     $reservationEndTime = Carbon::parse($reservation->end_time)->addMinutes(30);
-
-                    $slotTime = Carbon::parse($slot);
 
                     // 检查时间段是否在预定期间内
                     if ($slotTime >= $reservationStartTime && $slotTime < $reservationEndTime) {
@@ -301,6 +328,8 @@ private function generateTimeOptions($startHour, $endHour, $stepMinutes)
 
     return view('tableDetail', compact('table', 'availability', 'timeSlots', 'tables', 'date'));
 }
+
+
 
 
 
@@ -355,30 +384,47 @@ public function staffTableDetail(Request $request)
 {
     $date = $request->input('date', Carbon::now()->format('Y-m-d'));
 
-    // 查询所有桌子
+    // 查询所有桌子并按桌号排序
     $tables = Table::all()->sortBy('number');
 
     // 生成时间段
-    $timeSlots = $this->generateTimeOptions(10, 20, 30); // 使用相同的时间段生成逻辑
+    $timeSlots = [];
+    $startTime = Carbon::createFromFormat('H:i', '10:00');
+    $endTime = Carbon::createFromFormat('H:i', '20:00');
+    while ($startTime <= $endTime) {
+        $timeSlots[] = $startTime->format('H:i');
+        $startTime->addMinutes(30);
+    }
 
-    $startDate = Carbon::parse($date);
-    $endDate = Carbon::parse($date)->addMonths(3); // 确保日期范围一致
+    // 获取当前日期和时间
+    $currentDate = Carbon::now()->format('Y-m-d');
+    $currentTime = Carbon::now()->format('H:i');
 
-    $reservations = Reservation::whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
-        ->get();
+    // 获取选定日期的所有预订
+    $reservations = Reservation::where('date', $date)->get();
 
     // 计算可用性
     $availability = [];
     foreach ($timeSlots as $slot) {
         foreach ($tables as $tbl) {
-            $availability[$slot][$tbl->id] = 'available'; // 默认设置为 'available'
+            $slotTime = Carbon::parse($slot);
+
+            // 如果选定日期是今天且时间段已经过去，标记为 'past'
+            if ($date == $currentDate && $slotTime->format('H:i') < $currentTime) {
+                $availability[$slot][$tbl->id] = 'past';
+                continue;
+            }
+
+            // 默认设置为 'available'
+            $availability[$slot][$tbl->id] = 'available';
+
+            // 检查时间段是否已被预订
             foreach ($reservations as $reservation) {
-                if ($reservation->table_id == $tbl->id && $reservation->date == $date) {
+                if ($reservation->table_id == $tbl->id) {
                     $reservationStartTime = Carbon::parse($reservation->start_time);
                     $reservationEndTime = Carbon::parse($reservation->end_time)->addMinutes(30);
 
-                    $slotTime = Carbon::parse($slot);
-
+                    // 检查时间段是否在预定期间内
                     if ($slotTime >= $reservationStartTime && $slotTime < $reservationEndTime) {
                         $availability[$slot][$tbl->id] = 'booked';
                         break;
@@ -390,6 +436,7 @@ public function staffTableDetail(Request $request)
 
     return view('staffTableDetail', compact('tables', 'timeSlots', 'availability', 'date'));
 }
+
 
 
 

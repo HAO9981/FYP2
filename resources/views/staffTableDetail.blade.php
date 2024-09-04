@@ -36,7 +36,7 @@
                                 @endphp
                                 <td style="background-color: 
                                     @if($status == 'past')
-                                        orange
+                                        gray
                                     @elseif($status == 'available')
                                         green
                                     @else
@@ -48,7 +48,7 @@
                                             Book
                                         </a>
                                     @elseif($status == 'past')
-                                        Past
+                                            Book
                                     @else
                                         Booked
                                     @endif

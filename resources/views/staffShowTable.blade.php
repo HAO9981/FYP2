@@ -48,7 +48,16 @@
                         <td>
                             <img src="{{ asset('images') . '/' . $table->image }}" alt="" class="table-img img-fluid" style="max-width: 100px;">
                         </td>
-                        <td>{{ $table->type }}</td>
+                        <td>
+                            {{ $table->type }} 
+                            @if($table->type == 'Big')
+                                (Max 8 persons)
+                            @elseif($table->type == 'Medium')
+                                (Max 4 persons)
+                            @elseif($table->type == 'Small')
+                                (Max 2 persons)
+                            @endif
+                        </td>
                         <td>RM {{ $table->price }}</td> 
                         <td class="text-center">
                             <a href="{{ route('editTable', ['id' => $table->id]) }}" class="btn btn-warning btn-xs">Edit</a>
