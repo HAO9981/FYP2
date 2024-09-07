@@ -20,6 +20,12 @@ class UserController extends Controller
         return view('account', ['users' => $users]);
     }
 
+    public function edit()
+    {
+        $users = User::all();
+        return view('editAccount', ['users' => $users]);
+    }
+
     public function update(Request $request)
     {
         $request->validate([

@@ -4,20 +4,20 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-12">
-            <h3>Table Booking Status</h3>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h3>Table Booking Status</h3>
+                <a href="{{route('showTable')}}" class="btn btn-primary">Back to Table Page</a>
+            </div>
 
-            <!-- 日期选择表单 -->
-            <form method="GET" action="{{ route('tableDetail', $table->id) }}">
+            <form method="GET" action="{{ route('tableDetail', $table->id) }}" id="dateForm">
                 <div class="form-group">
                     <label for="date">Select Date:</label>
                     <input type="date" id="date" name="date" class="form-control" value="{{ $date }}" min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" max="{{ \Carbon\Carbon::now()->addMonths(3)->format('Y-m-d') }}">
                 </div>
-                <button type="submit" class="btn btn-primary">Show Status</button>
             </form>
             <br>
-
-            <!-- 状态表格 -->
-            <table class="table table-bordered">
+            <div class="table-responsive">
+            <table class="table table-bordered text-center" style="background-color: white; border-radius: 10px;">
                 <thead>
                     <tr>
                         <th>Time</th>
@@ -56,7 +56,14 @@
                     @endforeach
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('date').addEventListener('change', function() {
+        document.getElementById('dateForm').submit();
+    });
+</script>
 @endsection

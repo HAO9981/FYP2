@@ -21,7 +21,7 @@
                         </video>
                     </div>
                 </div>
-            </div>
+            </div>s
         </div>  
     </div>
     @endforeach

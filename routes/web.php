@@ -53,8 +53,14 @@ Route::post('/updateProduct',
 Route::get('/viewProduct/delete/{id}',
 [App\Http\Controllers\StaffController::class,'delete'])->name('viewProduct.delete');
 
+Route::get('/viewStock/delete/{id}',
+[App\Http\Controllers\ProductController::class,'delete'])->name('viewStock.delete');
+
 Route::get('/account',
 [App\Http\Controllers\UserController::class,'view'])->name('account');
+
+Route::get('/editAccount',
+[App\Http\Controllers\UserController::class,'edit'])->name('editAccount');
 
 Route::post('/updateAccount',
 [App\Http\Controllers\UserController::class,'update'])->name('updateAccount');
@@ -70,6 +76,9 @@ Route::get('/staffShowProduct',
 
 Route::get('/staffProductDetail/{id}',
 [App\Http\Controllers\StaffController::class,'productDetail'])->name('staffProductDetail');
+
+Route::post('/staffSearchProduct',
+[App\Http\Controllers\ProductController::class,'staffSearch'])->name('staffSearchProduct');
 
 Route::get('/staffAccount',
 [App\Http\Controllers\StaffController::class,'account'])->name('staffAccount');

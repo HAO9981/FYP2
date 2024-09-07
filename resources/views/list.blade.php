@@ -1,5 +1,4 @@
 @extends('staffLayout')
-
 @section('content')
 <div class="container mt-4">
     <h1 class="text-center mb-4">All Reservations</h1>
@@ -14,7 +13,7 @@
     </div>
 
     <div class="table-responsive">
-        <table class="table table-bordered table-striped">
+        <table class="table table-bordered table-striped text-center">
             <thead>
                 <tr>
                     <th>Reservation ID</th>

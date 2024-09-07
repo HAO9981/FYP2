@@ -1,10 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.cusApp')
 @section('content')
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-8">
-            <img src="{{asset('image/BGB.jpg')}}" alt="" width="1000" height="1000" class="img-fluid">
-        </div>
+    <div class="row justify-content-center">
         <div class="col-md-4 text-center">
             <img src="{{asset('image/Board Game Logo.png')}}" alt="" width="240" class="img-fluid">
             <div class="card">

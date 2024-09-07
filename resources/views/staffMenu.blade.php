@@ -1,13 +1,8 @@
 @extends('staffLayout')
 @section('content')
 <div class="container">
-    <div class="row">
-        <div class="col-md-6 offset-md-3 text-center" style="margin-top: 10px">
-            <h2>Menu</h2>
-        </div>
-        <div class="col-md-3 text-right" style="margin-top: 10px">
-            <a href="{{route('addMenu')}}" class="btn btn-success">Add Menu</a>
-        </div>
+    <div class="row justify-content-center" style="margin-top: 10px">
+        <a href="{{route('addMenu')}}" class="btn btn-success">Add Menu</a>
     </div>
 
     <div class="row justify-content-center my-4">
@@ -25,7 +20,7 @@
             <div class="card h-100" style="border-radius: 30px;">
                 <div class="card-body text-center" style="position: relative;">
                     <h3 class="card-title">{{$menu->name}}</h3>
-                    <img src="{{asset('images/')}}/{{$menu->image}}" alt="" class="img-fluid" style="max-height: 210px; max-width: 240px; object-fit: cover; margin: 0 auto;">
+                    <img src="{{asset('images/')}}/{{$menu->image}}" alt="" class="img-fluid" style="max-height: 250px; max-width: 100%; object-fit: contain; margin: 0 auto; padding-bottom: 40px;">
                     <div class="d-flex justify-content-between" style="position: absolute; bottom: 10px; width: 90%;">
                         <h5>RM {{$menu->price}}</h5>
                         <div>
@@ -55,7 +50,7 @@
             <div class="card h-100" style="border-radius: 30px;">
                 <div class="card-body text-center" style="position: relative;">
                     <h3 class="card-title">{{$menu->name}}</h3>
-                    <img src="{{asset('images/')}}/{{$menu->image}}" alt="" class="img-fluid" style="max-height: 200px; max-width: 210px; object-fit: cover; margin: 0 auto;">
+                    <img src="{{asset('images/')}}/{{$menu->image}}" alt="" class="img-fluid" style="max-height: 250px; max-width: 100%; object-fit: contain; margin: 0 auto; padding-bottom: 40px;">
                     <div class="d-flex justify-content-between" style="position: absolute; bottom: 10px; width: 90%;">
                         <h5>RM {{$menu->price}}</h5>
                         <div>

@@ -4,7 +4,6 @@
 <div class="container mt-4">
     <h1 class="text-center mb-4">My Reservations</h1>
 
-    <!-- 搜索表单 -->
     <form method="GET" action="{{ route('customer.reservations') }}" class="mb-4">
         <div class="input-group">
             <input type="text" name="table_number" class="form-control" placeholder="Search by Table Number" value="{{ request('table_number') }}">
@@ -15,7 +14,7 @@
     </form>
 
     <div class="table-responsive">
-        <table class="table table-bordered table-striped">
+        <table class="table table-bordered table-striped text-center" style="background-color: white; border-radius: 10px;">
             <thead>
                 <tr>
                     <th>Reservation ID</th>

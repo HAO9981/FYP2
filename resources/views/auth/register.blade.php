@@ -1,10 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.cusApp')
 @section('content')
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-3">
-            <img src="{{asset('image/Board Game Logo.png')}}" alt="" width="300" class="img-fluid">
-        </div>
+    <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">{{ __('Please create a new account.') }}</div>
@@ -40,12 +37,12 @@
                         </div>
 
                         <div class="row mb-3">
-                            <label for="contactNume" class="col-md-4 col-form-label text-md-end">{{ __('Contact Number') }}</label>
+                            <label for="contactNum" class="col-md-4 col-form-label text-md-end">{{ __('Contact Number') }}</label>
 
                             <div class="col-md-6">
                                 <input id="contactNum" type="text" class="form-control @error('contactNum') is-invalid @enderror" name="contactNum" value="{{ old('contactNum') }}" required autocomplete="contactNum">
 
-                                @error('Contact Number')
+                                @error('contactNum')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -57,19 +54,11 @@
                             <label for="gender" class="col-md-4 col-form-label text-md-end">{{ __('Gender') }}</label>
 
                             <div class="col-md-6">
-                                <div class="form-check">
-                                    <input class="form-check-input @error('gender') is-invalid @enderror" type="radio" name="gender" id="gender_male" value="male" {{ old('gender') == 'male' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="gender_male">
-                                        {{ __('Male') }}
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input @error('gender') is-invalid @enderror" type="radio" name="gender" id="gender_female" value="female" {{ old('gender') == 'female' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="gender_female">
-                                        {{ __('Female') }}
-                                    </label>
-                                </div>
-                                
+                                <select id="gender" name="gender" class="form-select @error('gender') is-invalid @enderror" required>
+                                    <option value="" disabled {{ old('gender') ? '' : 'selected' }}>Please Select Gender</option>
+                                    <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>{{ __('Male') }}</option>
+                                    <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>{{ __('Female') }}</option>
+                                </select>
 
                                 @error('gender')
                                     <span class="invalid-feedback" role="alert">
@@ -83,9 +72,12 @@
                             <label for="birthday" class="col-md-4 col-form-label text-md-end">{{ __('Birthday') }}</label>
 
                             <div class="col-md-6">
-                                <input id="birthday" type="date" class="form-control @error('birthday') is-invalid @enderror" name="birthday" value="{{ old('birthday') }}" required autocomplete="birthday">
+                                @php
+                                    $currentDate = \Carbon\Carbon::now()->format('Y-m-d');
+                                @endphp
+                                <input id="birthday" type="date" class="form-control @error('birthday') is-invalid @enderror" name="birthday" value="{{ old('birthday') }}" required autocomplete="birthday" max="{{ $currentDate }}">
 
-                                @error('Birthday')
+                                @error('birthday')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -94,12 +86,12 @@
                         </div>
                         
                         <div class="row mb-3">
-                            <label for="Address" class="col-md-4 col-form-label text-md-end">{{ __('Address') }}</label>
+                            <label for="address" class="col-md-4 col-form-label text-md-end">{{ __('Address') }}</label>
 
                             <div class="col-md-6">
                                 <input id="address" type="text" class="form-control @error('address') is-invalid @enderror" name="address" value="{{ old('address') }}" required autocomplete="address">
 
-                                @error('Address')
+                                @error('address')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -128,7 +120,6 @@
                                 <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
                             </div>
                         </div>
-                        
 
                         <div class="row mb-0">
                             <div class="col-md-6 offset-md-4">
@@ -140,9 +131,6 @@
                     </form>
                 </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <img src="{{asset('image/Board Game Logo.png')}}" alt="" width="300" class="img-fluid">
         </div>
     </div>
 </div>

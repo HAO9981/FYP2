@@ -105,8 +105,8 @@ public function add(){
 }
 
 public function view(){
-    $product=Product::all();
-    return view('staffShowProduct')->with ('products',$product);
+    $products=Product::paginate(8);
+    return view('staffShowProduct', compact('products'));
 }
 
 public function productDetail($id){

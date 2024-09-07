@@ -5,19 +5,15 @@
     <div class="row">
         <div class="col-md-12">
             <h3>Table Booking Status</h3>
-
-            <!-- 日期选择表单 -->
-            <form method="GET" action="{{ route('staffTableDetail') }}">
+            <form method="GET" action="{{ route('staffTableDetail') }}" id="dateForm">
                 <div class="form-group">
                     <label for="date">Select Date:</label>
                     <input type="date" id="date" name="date" class="form-control" value="{{ $date }}" min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" max="{{ \Carbon\Carbon::now()->addMonths(3)->format('Y-m-d') }}">
                 </div>
-                <button type="submit" class="btn btn-primary">Show Status</button>
             </form>
             <br>
-
-            <!-- 状态表格 -->
-            <table class="table table-bordered">
+            <div class="table-responsive">
+            <table class="table table-bordered text-center">
                 <thead>
                     <tr>
                         <th>Time</th>
@@ -58,7 +54,14 @@
                     @endforeach
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('date').addEventListener('change', function() {
+        document.getElementById('dateForm').submit();
+    });
+</script>
 @endsection

@@ -1,58 +1,36 @@
 @extends('layout')
 @section('content')
-<title>Account Page</title>
-<div class="row">
-    <div class="col-sm-3"></div>
-    <div class="col-sm-6">
+<div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8 col-sm-10">
         <br><br>
-        <h3>Account Information</h3>
-
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <h3>Account Information</h3>
+            <div>
+                <a href="{{route('editAccount')}}" class="btn btn-primary mb-2">Edit Account Info</a>
+                <a href="{{ route('logout') }}"
+                   class="btn btn-danger mb-2"
+                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    Log Out
+                </a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                    @csrf
+                </form>
             </div>
-        @endif
-
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form action="{{ route('updateAccount') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <label for="userName">Name:</label>
-            <input class="form-control" type="text" id="userName" name="userName" required value="{{ Auth::user()->name }}" readonly> 
-            <label>Email:</label>
-            <input class="form-control" type="email" id="userEmail" name="userEmail" required value="{{ Auth::user()->email }}" readonly>
-            <label>Contact Number:</label>
-            <input class="form-control" type="text" id="userContactNum" name="userContactNum" required value="{{ Auth::user()->contactNum }}" required>
-            <label>Gender:</label>
-            <input class="form-control" type="text" id="userGender" name="userGender" required value="{{ Auth::user()->gender }}" readonly>
-            <label>Birthday:</label>
-            <input class="form-control" type="date" id="userBirthday" name="userBirthday" required value="{{ Auth::user()->birthday }}" readonly>
-            <label>Address:</label>
-            <input class="form-control" type="text" id="userAddress" name="userAddress" required value="{{ Auth::user()->address }}" required>
-            <br><br>
-            <h3>Change Password</h3>
-            <label for="currentPassword">Current Password:</label>
-            <input class="form-control" type="password" id="currentPassword" name="currentPassword">
-
-            <label for="newPassword">New Password:</label>
-            <input class="form-control" type="password" id="newPassword" name="newPassword">
-
-            <label for="newPassword_confirmation">Confirm New Password:</label>
-            <input class="form-control" type="password" id="newPassword_confirmation" name="newPassword_confirmation">
-            
-            <br><br>
-            <button type="submit" class="btn btn-primary">Update Account Information</button>
-        </form>
+        </div>
+        @csrf
+        <label for="userName">Name:</label>
+        <input class="form-control mb-3" type="text" id="userName" name="userName" value="{{ Auth::user()->name }}" readonly> 
+        <label>Email:</label>
+        <input class="form-control mb-3" type="email" id="userEmail" name="userEmail" value="{{ Auth::user()->email }}" readonly>
+        <label>Contact Number:</label>
+        <input class="form-control mb-3" type="text" id="userContactNum" name="userContactNum" value="{{ Auth::user()->contactNum }}" readonly>
+        <label>Gender:</label>
+        <input class="form-control mb-3" type="text" id="userGender" name="userGender" value="{{ Auth::user()->gender }}" readonly>
+        <label>Birthday:</label>
+        <input class="form-control mb-3" type="date" id="userBirthday" name="userBirthday" value="{{ Auth::user()->birthday }}" readonly>
+        <label>Address:</label>
+        <input class="form-control mb-3" type="text" id="userAddress" name="userAddress" value="{{ Auth::user()->address }}" readonly>
         <br><br>
     </div>
-    <div class="col-sm-3"></div>
 </div>
 @endsection

@@ -16,4 +16,5 @@
     <br>
     <a href="{{ route('list') }}" class="btn btn-success">Back to All Reservations</a>
 </div>
+<br>
 @endsection

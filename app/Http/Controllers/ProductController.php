@@ -9,8 +9,8 @@ use App\Models\Product;
 class ProductController extends Controller
 {
     public function view(){
-        $viewProduct=Product::all();
-        return view('showProduct')->with ('products',$viewProduct);
+        $products=Product::paginate(8);
+        return view('showProduct', compact('products'));
     }
 
     public function productDetail($id){
@@ -24,7 +24,8 @@ class ProductController extends Controller
         $viewProduct=DB::table('products')
         ->select('products.*')
         ->where('products.name', 'like', '%' . $keyword . '%')
-        ->orWhere('products.type', 'like', '%' . $keyword . '%')->get();
+        ->orWhere('products.type', 'like', '%' . $keyword . '%')
+        ->paginate(8);
         return view('showProduct')->with ('products',$viewProduct);
     }
 
@@ -48,5 +49,22 @@ class ProductController extends Controller
         }
 
         return redirect()->route('showStock');
+    }
+
+    public function delete($id){
+        $product = Product::find($id);
+        $product->delete();
+        return redirect()->route('showStock');
+    }
+
+    public function staffSearch(){
+        $r=request();
+        $keyword=$r->searchProduct;
+        $viewProduct=DB::table('products')
+        ->select('products.*')
+        ->where('products.name', 'like', '%' . $keyword . '%')
+        ->orWhere('products.type', 'like', '%' . $keyword . '%')
+        ->paginate(8);
+        return view('staffShowProduct')->with ('products',$viewProduct);
     }
 }

@@ -3,7 +3,6 @@
 @section('content')
 <div class="container mt-5">
     <div class="row">
-        <!-- 左侧内容 -->
         <div class="col-md-4 mb-4">
             <h2 class="mb-4">Upload Image</h2>
             
@@ -27,9 +26,8 @@
             </div>
         </div>
 
-        <!-- 右侧内容 -->
-        <div class="col-md-8">
-            <table class="table table-bordered">
+        <div class="col-md-8 table-responsive">
+            <table class="table table-bordered text-center">
                 <thead>
                     <tr>
                         <th>Table No</th>
@@ -61,8 +59,6 @@
                         <td>RM {{ $table->price }}</td> 
                         <td class="text-center">
                             <a href="{{ route('editTable', ['id' => $table->id]) }}" class="btn btn-warning btn-xs">Edit</a>
-                            
-                            <!-- 删除按钮，带有二次确认 -->
                             <a href="{{ route('viewTable.delete', ['id' => $table->id]) }}" 
                                class="btn btn-danger"
                                onclick="return confirm('Are you sure you want to delete this table?');">

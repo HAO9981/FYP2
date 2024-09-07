@@ -2,16 +2,19 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="row">
-                    <div class="col-md-6 offset-md-3 text-center" style="margin-top: 10px">
-                        <h2>Board Game Library</h2>
-                    </div>
-                    <div class="col-md-3 text-right" style="margin-top: 10px; margin-bottom: 10px">
-                        <a href="{{route('addProduct')}}" class="btn btn-success">Add Board Game</a>
-                    </div>
-                </div>
+        <div class="row align-items-center">
+            <div class="col-md-3" style="margin-top: 10px; margin-bottom: 10px">
+                <a href="{{route('addProduct')}}" class="btn btn-success">Add Board Game</a>
+            </div>
+            <div class="col-md-6 text-center" style="margin-top: 10px">
+                <h2>Board Game Library</h2>
+            </div>
+            <div style="margin-top: 10px; margin-bottom: 10px">
+                <form class="form-inline d-flex justify-content-end" method="POST" action="{{route('staffSearchProduct')}}">
+                    @csrf
+                    <input class="form-control mr-sm-1" type="search" placeholder="Search by Name or Type" aria-label="Search" name="searchProduct">
+                    <button class="btn btn-success my-2 my-sm-0" type="submit">Search</button>
+                </form>
             </div>
         </div>
     </div>

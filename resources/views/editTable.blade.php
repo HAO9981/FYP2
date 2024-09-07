@@ -1,5 +1,4 @@
 @extends('staffLayout')
-
 @section('content')
 <div class="row">
     <div class="col-sm-3"></div>
@@ -7,7 +6,6 @@
         <br><br>
         <h3>Edit Table Info</h3>
 
-        <!-- 显示错误消息 -->
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul>
@@ -18,7 +16,6 @@
             </div>
         @endif
 
-        <!-- 显示成功消息 -->
         @if (session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}

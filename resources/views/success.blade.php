@@ -22,7 +22,7 @@
         <button id="download_pdf_btn" class="btn btn-danger">Download PDF</button>
     </div>
 </div>
-
+<br>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const totalPriceDisplay = document.getElementById('total_price_display');
