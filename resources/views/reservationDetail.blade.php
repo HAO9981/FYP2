@@ -20,7 +20,7 @@
     </div>
 
     <div class="row justify-content-center mt-4">
-        <div class="col-12 col-md-6 d-flex justify-content-center justify-content-md-end">
+        <div class="col-12 col-md-6 d-flex justify-content-center">
             <form id="payment-form" action="{{ route('create.checkout.session') }}" method="POST">
                 @csrf
                 <input type="hidden" id="amount" name="amount" value="">

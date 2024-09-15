@@ -10,11 +10,6 @@ use Illuminate\Support\Facades\Hash;
 
 class StaffController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:staff')->except(['showLoginForm', 'login', 'showRegisterForm', 'register']);
-    }
-
     public function account(){
         $staffs = staff::all();
         return view('staffAccount', ['staffs' => $staffs]);

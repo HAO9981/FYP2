@@ -21,6 +21,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::post('/logout', 
+[App\Http\Controllers\Auth\LoginController::class,'logout'])->name('logout');
+
 Route::get('/homePage',
 [App\Http\Controllers\ProductController::class,'home'])->name('homePage');
 
